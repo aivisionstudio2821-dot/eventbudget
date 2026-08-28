@@ -217,20 +217,60 @@ export const App: React.FC = () => {
 
   // Auto Rebalance Trigger from anywhere
   const handleFixMyBudget = () => {
-    if (!event) return;
-    const { newAllocations } = rebalanceEventAllocations(event);
-    const updated: EventState = {
-      ...event,
-      allocations: newAllocations,
-      customEntertainmentPrices: {
-        ...event.customEntertainmentPrices,
-        ent_basic_dj: Math.min(newAllocations.dj || 6000, 6000),
-      }
-    };
-    handleUpdateEvent(updated);
-    showToast('success', '⚡ Budget Rebalanced!', 'Adjusted allocations to bring total within target.');
-    confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+  if (!event) return;
+
+  const plannedSpend = calculateTotalPlanned(event);
+  const overAmount = Math.max(0, plannedSpend - event.totalBudget);
+
+  if (overAmount <= 0) {
+    showToast('info', 'Budget Already Balanced', 'Your event is already within budget.');
+    return;
+  }
+
+  const { newAllocations, savedAmount } = rebalanceEventAllocations(
+    event,
+    overAmount
+  );
+
+  const updated: EventState = {
+    ...event,
+    allocations: newAllocations,
+
+    customEntertainmentPrices: {
+      ...event.customEntertainmentPrices,
+
+      // If DJ/custom entertainment is causing overspend,
+      // reduce its effective selected price to the new DJ allocation.
+      ent_basic_dj: Math.min(
+        event.customEntertainmentPrices?.ent_basic_dj ?? 6000,
+        newAllocations.dj ?? 6000
+      ),
+    },
   };
+
+  handleUpdateEvent(updated);
+
+  if (savedAmount >= overAmount) {
+    showToast(
+      'success',
+      '⚡ Budget Rebalanced!',
+      `₹${Math.round(overAmount).toLocaleString('en-IN')} successfully adjusted.`
+    );
+
+    confetti({
+      particleCount: 70,
+      spread: 60,
+      origin: { y: 0.6 },
+    });
+  } else {
+    showToast(
+      'info',
+      'Budget Partially Adjusted',
+      `₹${Math.round(savedAmount).toLocaleString('en-IN')} adjusted. Some selected items may still need to be downgraded.`
+    );
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-sans selection:bg-purple-500 selection:text-white">
