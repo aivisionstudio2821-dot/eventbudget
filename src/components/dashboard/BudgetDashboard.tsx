@@ -85,8 +85,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       }
     };
     onUpdateEvent(updated);
-    triggerConfetti();
-  };
+    trigge
 
   // Curated preset apply
   const handleApplyCuratedPackage = () => {
