@@ -394,11 +394,6 @@ export function rebalanceEventAllocations(
     });
   }
 
-  // Ensure sum matches totalBudget
-  const totalNew = Object.values(newAllocations).reduce((a, b) => a + b, 0);
-  if (totalNew !== totalBudget) {
-    newAllocations.buffer = Math.max(0, (newAllocations.buffer || 0) + (totalBudget - totalNew));
-  }
 
   return {
     newAllocations,
