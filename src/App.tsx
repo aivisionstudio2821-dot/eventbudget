@@ -216,45 +216,197 @@ export const App: React.FC = () => {
   };
 
   // Auto Rebalance Trigger from anywhere
-  const handleFixMyBudget = () => {
+  
+
+  
+      const handleFixMyBudget = () => {
   if (!event) return;
 
   const plannedSpend = calculateTotalPlanned(event);
-  const overAmount = Math.max(0, plannedSpend - event.totalBudget);
+  let remainingOver = Math.max(0, plannedSpend - event.totalBudget);
 
-  if (overAmount <= 0) {
-    showToast('info', 'Budget Already Balanced', 'Your event is already within budget.');
+  if (remainingOver <= 0) {
+    showToast(
+      'info',
+      'Budget Already Balanced',
+      'Your event is already within budget.'
+    );
     return;
   }
 
-  const { newAllocations, savedAmount } = rebalanceEventAllocations(
+  const { newAllocations } = rebalanceEventAllocations(
     event,
-    overAmount
+    remainingOver
   );
+
+  const customPhotographyPrices = {
+    ...(event.customPhotographyPrices || {}),
+  };
+
+  const customDecorPrices = {
+    ...(event.customDecorPrices || {}),
+  };
+
+  const customEntertainmentPrices = {
+    ...(event.customEntertainmentPrices || {}),
+  };
+
+  const customVenueAddonPrices = {
+    ...(event.customVenueAddonPrices || {}),
+  };
+
+  let customVenuePrice = event.customVenuePrice;
+
+  // PHOTOGRAPHY
+  for (const [id, selected] of Object.entries(
+    event.selectedPhotography || {}
+  )) {
+    if (!selected || remainingOver <= 0) continue;
+
+    const singleItemState: EventState = {
+      ...event,
+      selectedPhotography: { [id]: true },
+    };
+
+    const currentPrice =
+      customPhotographyPrices[id] ??
+      calculateCategoryTotals(singleItemState).photography;
+
+    const reduction = Math.min(currentPrice, remainingOver);
+
+    customPhotographyPrices[id] = Math.max(
+      0,
+      currentPrice - reduction
+    );
+
+    remainingOver -= reduction;
+  }
+
+  // DECORATION
+  for (const [id, selected] of Object.entries(
+    event.selectedDecorItems || {}
+  )) {
+    if (!selected || remainingOver <= 0) continue;
+
+    const singleItemState: EventState = {
+      ...event,
+      selectedDecorItems: { [id]: true },
+    };
+
+    const currentPrice =
+      customDecorPrices[id] ??
+      calculateCategoryTotals(singleItemState).decoration;
+
+    const reduction = Math.min(currentPrice, remainingOver);
+
+    customDecorPrices[id] = Math.max(
+      0,
+      currentPrice - reduction
+    );
+
+    remainingOver -= reduction;
+  }
+
+  // DJ / ENTERTAINMENT
+  for (const [id, selected] of Object.entries(
+    event.selectedEntertainment || {}
+  )) {
+    if (!selected || remainingOver <= 0) continue;
+
+    const singleItemState: EventState = {
+      ...event,
+      selectedEntertainment: { [id]: true },
+    };
+
+    const currentPrice =
+      customEntertainmentPrices[id] ??
+      calculateCategoryTotals(singleItemState).dj;
+
+    const reduction = Math.min(currentPrice, remainingOver);
+
+    customEntertainmentPrices[id] = Math.max(
+      0,
+      currentPrice - reduction
+    );
+
+    remainingOver -= reduction;
+  }
+
+  // VENUE ADD-ONS
+  for (const [id, selected] of Object.entries(
+    event.selectedVenueAddons || {}
+  )) {
+    if (!selected || remainingOver <= 0) continue;
+
+    const singleItemState: EventState = {
+      ...event,
+      selectedVenueId: null,
+      selectedVenueAddons: { [id]: true },
+    };
+
+    const currentPrice =
+      customVenueAddonPrices[id] ??
+      calculateCategoryTotals(singleItemState).venue;
+
+    const reduction = Math.min(currentPrice, remainingOver);
+
+    customVenueAddonPrices[id] = Math.max(
+      0,
+      currentPrice - reduction
+    );
+
+    remainingOver -= reduction;
+  }
+
+  // VENUE BASE PRICE — fallback
+  if (
+    remainingOver > 0 &&
+    event.selectedVenueId
+  ) {
+    const venueOnlyState: EventState = {
+      ...event,
+      selectedVenueAddons: {},
+    };
+
+    const currentVenuePrice =
+      customVenuePrice ??
+      calculateCategoryTotals(venueOnlyState).venue;
+
+    const reduction = Math.min(
+      currentVenuePrice,
+      remainingOver
+    );
+
+    customVenuePrice = Math.max(
+      0,
+      currentVenuePrice - reduction
+    );
+
+    remainingOver -= reduction;
+  }
 
   const updated: EventState = {
     ...event,
     allocations: newAllocations,
-
-    customEntertainmentPrices: {
-      ...event.customEntertainmentPrices,
-
-      // If DJ/custom entertainment is causing overspend,
-      // reduce its effective selected price to the new DJ allocation.
-      ent_basic_dj: Math.min(
-        event.customEntertainmentPrices?.ent_basic_dj ?? 6000,
-        newAllocations.dj ?? 6000
-      ),
-    },
+    customPhotographyPrices,
+    customDecorPrices,
+    customEntertainmentPrices,
+    customVenuePrice,
+    customVenueAddonPrices,
   };
+
+  const finalSpend = calculateTotalPlanned(updated);
+  const actualSaved = Math.max(0, plannedSpend - finalSpend);
 
   handleUpdateEvent(updated);
 
-  if (savedAmount >= overAmount) {
+  if (finalSpend <= event.totalBudget) {
     showToast(
       'success',
-      '⚡ Budget Rebalanced!',
-      `₹${Math.round(overAmount).toLocaleString('en-IN')} successfully adjusted.`
+      '⚡ Budget Fixed!',
+      `₹${Math.round(actualSaved).toLocaleString(
+        'en-IN'
+      )} successfully rebalanced.`
     );
 
     confetti({
@@ -263,10 +415,16 @@ export const App: React.FC = () => {
       origin: { y: 0.6 },
     });
   } else {
+    const stillOver = finalSpend - event.totalBudget;
+
     showToast(
       'info',
       'Budget Partially Adjusted',
-      `₹${Math.round(savedAmount).toLocaleString('en-IN')} adjusted. Some selected items may still need to be downgraded.`
+      `₹${Math.round(actualSaved).toLocaleString(
+        'en-IN'
+      )} adjusted. ₹${Math.round(
+        stillOver
+      ).toLocaleString('en-IN')} still over budget.`
     );
   }
 };
