@@ -77,4 +77,56 @@ h1, h2, h3, .font-heading {
 
 .glow-emerald {
   box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.3);
+} 
+
+
+/* EventBudget Premium Black & Gold Background */
+
+html {
+  background: #06090b;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #f5f3ed;
+
+  background:
+    radial-gradient(circle at 15% 10%,
+      rgba(214, 179, 106, 0.14),
+      transparent 30%),
+    radial-gradient(circle at 88% 18%,
+      rgba(45, 212, 163, 0.07),
+      transparent 28%),
+    radial-gradient(circle at 50% 90%,
+      rgba(214, 179, 106, 0.05),
+      transparent 35%),
+    linear-gradient(160deg,
+      #06090b 0%,
+      #0b1013 45%,
+      #080c0e 100%);
+
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image:
+    linear-gradient(rgba(214,179,106,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(214,179,106,0.018) 1px, transparent 1px);
+
+  background-size: 48px 48px;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
 }
