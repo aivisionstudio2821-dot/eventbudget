@@ -8,8 +8,7 @@ import {
   Menu,
   X,
   TrendingUp,
-  Store,
-  FileText
+  Store
 } from 'lucide-react';
 
 import { EventState } from '../../types';
@@ -42,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const plannedTotal = event ? calculateTotalPlanned(event) : 0;
 
   const isOverBudget = event
-    ? (plannedTotal + (event.allocations.buffer || 0)) > event.totalBudget
+    ? plannedTotal + (event.allocations.buffer || 0) > event.totalBudget
     : false;
 
   const scrollTo = (sectionId: string) => {
@@ -63,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <div className="flex items-center justify-between h-16 sm:h-20">
 
-          {/* Logo & Brand */}
+          {/* LOGO */}
           <div
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => scrollTo('hero-section')}
@@ -107,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           </div>
 
-          {/* Center Navigation Links */}
+          {/* DESKTOP NAVIGATION */}
           <nav className="hidden lg:flex items-center gap-1">
 
             <button
@@ -162,17 +161,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </>
             )}
 
-            <button
-              onClick={() => scrollTo('business-model')}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-amber-200 hover:bg-slate-800/30 flex items-center gap-1.5 transition-all"
-            >
-              <FileText className="w-4 h-4" />
-              Startup Model
-            </button>
-
           </nav>
 
-          {/* Right Action Buttons */}
+          {/* DESKTOP ACTIONS */}
           <div className="hidden sm:flex items-center gap-2.5">
 
             {event && (
@@ -199,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* Demo */}
+            {/* DEMO */}
             <button
               onClick={onLoadDemo}
               className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
@@ -259,12 +250,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           </div>
 
-          {/* Mobile Hamburger */}
+          {/* MOBILE */}
           <div className="flex lg:hidden items-center gap-2">
 
             <button
               onClick={onLoadDemo}
-              className="sm:hidden px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 active:scale-95 flex items-center gap-1"
+              className="sm:hidden px-2 py-1 rounded-lg text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 active:scale-95 flex items-center gap-1"
             >
 
               <Zap className="w-3 h-3 fill-amber-300" />
@@ -293,7 +284,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       </div>
 
-      {/* Mobile Drawer */}
+      {/* MOBILE DRAWER */}
       {isMobileMenuOpen && (
 
         <div className="lg:hidden bg-[#090d0e] border-b border-amber-900/20 px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-4 duration-200">
@@ -365,13 +356,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               </>
             )}
-
-            <button
-              onClick={() => scrollTo('business-model')}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-amber-200 hover:bg-slate-800"
-            >
-              💼 Startup Business Model
-            </button>
 
           </div>
 
