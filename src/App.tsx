@@ -32,7 +32,9 @@ import { VenuePlanner } from './components/planners/VenuePlanner';
 import { MiscellaneousPlanner } from './components/planners/MiscellaneousPlanner';
 import { VendorMarketplace } from './components/vendors/VendorMarketplace';
 import { ToastContainer, ToastMessage } from './components/common/Toast';
-import { rebalanceEventAllocations } from './utils/budgetCalculations';
+import { rebalanceEventAllocations  rebalanceEventAllocations,
+  calculateTotalPlanned,
+  calculateCategoryTotals } from './utils/budgetCalculations';
 import { formatINR } from './utils/currencyFormatter';
 
 const STORAGE_KEY = 'eventbudget_active_plan_v1';
