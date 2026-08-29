@@ -434,7 +434,7 @@ export const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col font-sans selection:bg-purple-500 selection:text-white">
+    <<div className="min-h-screen bg-transparent text-[#211b15] flex flex-col font-sans selection:bg-[#d8b97b] selection:text-[#211b15]">>
       
       {/* Toast Feedback */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
