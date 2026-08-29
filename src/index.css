@@ -4,7 +4,7 @@
 
 /* =========================================================
    EVENTBUDGET — PREMIUM LUXURY THEME
-   Black • Champagne Gold • Emerald
+   Charcoal • Champagne Gold • Emerald
    ========================================================= */
 
 :root {
@@ -14,10 +14,10 @@
 
   color-scheme: dark;
 
-  --eb-black: #040606;
-  --eb-black-soft: #070a0b;
-  --eb-charcoal: #0b1011;
-  --eb-card: rgba(12, 17, 18, 0.72);
+  --eb-black: #0b1011;
+  --eb-black-soft: #101718;
+  --eb-charcoal: #141c1d;
+  --eb-card: rgba(17, 24, 25, 0.76);
 
   --eb-gold: #d6b36a;
   --eb-gold-light: #f0d89a;
@@ -25,10 +25,9 @@
 
   --eb-emerald: #2dd4a3;
 
-  --eb-text: #f7f4ec;
-  --eb-muted: #9da6a4;
+  --eb-text: #f8f5ed;
+  --eb-muted: #aeb7b5;
 }
-
 
 /* =========================================================
    BASE
@@ -36,7 +35,7 @@
 
 html {
   min-height: 100%;
-  background: #040606;
+  background: #0d1314;
   scroll-behavior: smooth;
 }
 
@@ -50,44 +49,44 @@ body {
 
   background:
     radial-gradient(
-      ellipse 70% 45% at 50% -5%,
-      rgba(214, 179, 106, 0.17) 0%,
-      rgba(214, 179, 106, 0.055) 38%,
+      ellipse 85% 55% at 50% -5%,
+      rgba(214, 179, 106, 0.25) 0%,
+      rgba(214, 179, 106, 0.10) 38%,
+      transparent 72%
+    ),
+
+    radial-gradient(
+      ellipse 55% 55% at 100% 35%,
+      rgba(45, 212, 163, 0.08) 0%,
       transparent 70%
     ),
 
     radial-gradient(
-      ellipse 45% 40% at -5% 35%,
-      rgba(214, 179, 106, 0.065) 0%,
+      ellipse 55% 45% at 0% 65%,
+      rgba(214, 179, 106, 0.08) 0%,
       transparent 70%
     ),
 
     radial-gradient(
-      ellipse 45% 45% at 105% 42%,
-      rgba(45, 212, 163, 0.045) 0%,
-      transparent 70%
-    ),
-
-    radial-gradient(
-      ellipse 55% 40% at 50% 105%,
-      rgba(214, 179, 106, 0.045) 0%,
-      transparent 70%
+      ellipse 60% 40% at 50% 105%,
+      rgba(214, 179, 106, 0.07) 0%,
+      transparent 72%
     ),
 
     linear-gradient(
       180deg,
-      #040606 0%,
-      #080b0c 25%,
-      #090d0e 50%,
-      #070a0b 75%,
-      #030505 100%
+      #111718 0%,
+      #0f1516 30%,
+      #111819 60%,
+      #0c1112 100%
     );
 
   background-attachment: fixed;
 }
 
-
-/* Soft luxury light */
+/* =========================================================
+   PREMIUM LIGHT / ATMOSPHERE
+   ========================================================= */
 
 body::before {
   content: "";
@@ -100,17 +99,19 @@ body::before {
   background:
     linear-gradient(
       115deg,
-      transparent 10%,
-      rgba(255, 238, 194, 0.018) 38%,
-      rgba(255, 238, 194, 0.032) 50%,
-      transparent 66%
+      transparent 5%,
+      rgba(255, 238, 194, 0.025) 30%,
+      rgba(255, 238, 194, 0.055) 48%,
+      rgba(255, 238, 194, 0.018) 60%,
+      transparent 75%
     );
 
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-
-/* Very subtle premium grid */
+/* =========================================================
+   SUBTLE PREMIUM GRID
+   ========================================================= */
 
 body::after {
   content: "";
@@ -122,40 +123,37 @@ body::after {
 
   background-image:
     linear-gradient(
-      rgba(214, 179, 106, 0.012) 1px,
+      rgba(214, 179, 106, 0.018) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(214, 179, 106, 0.012) 1px,
+      rgba(214, 179, 106, 0.018) 1px,
       transparent 1px
     );
 
-  background-size: 70px 70px;
+  background-size: 72px 72px;
 
   -webkit-mask-image:
     linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.55),
-      transparent 72%
+      rgba(0, 0, 0, 0.65),
+      transparent 78%
     );
 
   mask-image:
     linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.55),
-      transparent 72%
+      rgba(0, 0, 0, 0.65),
+      transparent 78%
     );
 }
-
 
 #root {
   position: relative;
   z-index: 1;
-
   min-height: 100vh;
 }
-
 
 /* =========================================================
    TYPOGRAPHY
@@ -173,16 +171,14 @@ h3,
   font-family: 'Space Grotesk', monospace, sans-serif;
 }
 
-
 /* =========================================================
    TEXT SELECTION
    ========================================================= */
 
 ::selection {
-  background: rgba(214, 179, 106, 0.28);
+  background: rgba(214, 179, 106, 0.32);
   color: #fff8e7;
 }
-
 
 /* =========================================================
    PREMIUM SCROLLBAR
@@ -194,15 +190,15 @@ h3,
 }
 
 ::-webkit-scrollbar-track {
-  background: #040606;
+  background: #0b1011;
 }
 
 ::-webkit-scrollbar-thumb {
   background:
     linear-gradient(
       180deg,
-      #80652f,
-      #b89550
+      #8f7035,
+      #c19c54
     );
 
   border-radius: 999px;
@@ -213,10 +209,9 @@ h3,
     linear-gradient(
       180deg,
       #b89550,
-      #d6b36a
+      #e0c078
     );
 }
-
 
 /* =========================================================
    GLASS CARDS
@@ -228,22 +223,24 @@ h3,
   background:
     linear-gradient(
       145deg,
-      rgba(17, 23, 23, 0.86),
-      rgba(8, 12, 13, 0.72)
+      rgba(24, 32, 32, 0.86),
+      rgba(14, 20, 21, 0.80)
     );
 
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
-  border: 1px solid rgba(214, 179, 106, 0.11);
+  border:
+    1px solid rgba(214, 179, 106, 0.15);
 
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    0 18px 50px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 
-
-/* Card hover */
+/* =========================================================
+   CARD HOVER
+   ========================================================= */
 
 .glass-card-hover {
   transition:
@@ -259,34 +256,35 @@ h3,
   background:
     linear-gradient(
       145deg,
-      rgba(20, 26, 25, 0.92),
-      rgba(9, 14, 14, 0.82)
+      rgba(29, 38, 37, 0.94),
+      rgba(16, 23, 23, 0.88)
     );
 
-  border-color: rgba(214, 179, 106, 0.30);
+  border-color:
+    rgba(214, 179, 106, 0.36);
 
   box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.38),
-    0 0 35px rgba(214, 179, 106, 0.055),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 24px 65px rgba(0, 0, 0, 0.32),
+    0 0 38px rgba(214, 179, 106, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
 }
-
 
 /* =========================================================
    INPUTS
    ========================================================= */
 
 .glass-input {
-  color: #f7f4ec;
+  color: #f8f5ed;
 
   background:
     linear-gradient(
       145deg,
-      rgba(12, 17, 18, 0.9),
-      rgba(7, 10, 11, 0.88)
+      rgba(20, 28, 29, 0.94),
+      rgba(13, 19, 20, 0.92)
     );
 
-  border: 1px solid rgba(214, 179, 106, 0.14);
+  border:
+    1px solid rgba(214, 179, 106, 0.18);
 
   transition:
     border-color 0.2s ease,
@@ -295,49 +293,53 @@ h3,
 }
 
 .glass-input:hover {
-  border-color: rgba(214, 179, 106, 0.28);
+  border-color:
+    rgba(214, 179, 106, 0.32);
 }
 
 .glass-input:focus {
   outline: none;
 
-  border-color: rgba(214, 179, 106, 0.72);
+  border-color:
+    rgba(214, 179, 106, 0.78);
 
-  background: rgba(10, 14, 15, 0.96);
+  background:
+    rgba(17, 24, 25, 0.98);
 
   box-shadow:
-    0 0 0 3px rgba(214, 179, 106, 0.10),
-    0 0 25px rgba(214, 179, 106, 0.06);
+    0 0 0 3px rgba(214, 179, 106, 0.11),
+    0 0 28px rgba(214, 179, 106, 0.08);
 }
 
 .glass-input::placeholder {
-  color: rgba(200, 205, 202, 0.45);
+  color:
+    rgba(210, 215, 212, 0.48);
 }
 
-
 /* =========================================================
-   PREMIUM GLOW UTILITIES
-   Existing class names preserved so components don't break.
+   EXISTING GLOW CLASS COMPATIBILITY
+
+   Existing components may still use old class names.
+   We preserve them but convert their visual style to gold.
    ========================================================= */
 
 .glow-purple {
   box-shadow:
-    0 0 40px -8px rgba(214, 179, 106, 0.26);
+    0 0 42px -8px rgba(214, 179, 106, 0.28);
 }
 
 .glow-pink {
   box-shadow:
-    0 0 40px -8px rgba(214, 179, 106, 0.20);
+    0 0 42px -8px rgba(214, 179, 106, 0.22);
 }
 
 .glow-emerald {
   box-shadow:
-    0 0 40px -8px rgba(45, 212, 163, 0.24);
+    0 0 42px -8px rgba(45, 212, 163, 0.25);
 }
 
-
 /* =========================================================
-   OPTIONAL PREMIUM UTILITIES
+   PREMIUM GOLD UTILITIES
    ========================================================= */
 
 .gold-text {
@@ -349,9 +351,9 @@ h3,
     linear-gradient(
       100deg,
       #b8924c 0%,
-      #f0d89a 45%,
-      #d6b36a 75%,
-      #a98542 100%
+      #f4dda3 42%,
+      #d6b36a 72%,
+      #aa8642 100%
     );
 
   -webkit-background-clip: text;
@@ -361,7 +363,8 @@ h3,
 }
 
 .gold-border {
-  border-color: rgba(214, 179, 106, 0.30);
+  border-color:
+    rgba(214, 179, 106, 0.34);
 }
 
 .premium-divider {
@@ -371,11 +374,10 @@ h3,
     linear-gradient(
       90deg,
       transparent,
-      rgba(214, 179, 106, 0.35),
+      rgba(214, 179, 106, 0.42),
       transparent
     );
 }
-
 
 /* =========================================================
    BUTTON POLISH
@@ -387,10 +389,37 @@ button {
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid rgba(214, 179, 106, 0.7);
+  outline:
+    2px solid rgba(214, 179, 106, 0.75);
+
   outline-offset: 3px;
 }
 
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+  text-decoration-color:
+    rgba(214, 179, 106, 0.4);
+}
+
+/* =========================================================
+   SMOOTH UI
+   ========================================================= */
+
+button,
+a,
+input,
+select,
+textarea {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
 
 /* =========================================================
    MOBILE
@@ -401,33 +430,43 @@ a:focus-visible {
   body {
     background:
       radial-gradient(
-        ellipse 95% 35% at 50% 0%,
-        rgba(214, 179, 106, 0.13),
-        transparent 70%
+        ellipse 100% 42% at 50% 0%,
+        rgba(214, 179, 106, 0.20),
+        transparent 72%
       ),
 
       radial-gradient(
-        ellipse 70% 35% at 100% 45%,
-        rgba(45, 212, 163, 0.035),
-        transparent 70%
+        ellipse 75% 40% at 100% 48%,
+        rgba(45, 212, 163, 0.06),
+        transparent 72%
+      ),
+
+      radial-gradient(
+        ellipse 75% 40% at 0% 75%,
+        rgba(214, 179, 106, 0.06),
+        transparent 72%
       ),
 
       linear-gradient(
         180deg,
-        #040606 0%,
-        #080b0c 50%,
-        #040606 100%
+        #111718 0%,
+        #101718 48%,
+        #0b1112 100%
       );
 
     background-attachment: fixed;
   }
 
   body::after {
-    background-size: 54px 54px;
+    background-size:
+      54px 54px;
   }
 
   .glass-card {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter:
+      blur(14px);
+
+    -webkit-backdrop-filter:
+      blur(14px);
   }
 }
