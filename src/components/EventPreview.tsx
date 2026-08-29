@@ -9,12 +9,16 @@ import {
   WandSparkles,
 } from 'lucide-react';
 
+import simpleImage from '../assets/event-preview/simple.png.png';
+import standardImage from '../assets/event-preview/standard.png.png';
+import premiumImage from '../assets/event-preview/premium.png.png';
+import luxuryImage from '../assets/event-preview/luxury.png.png';
+
 type PreviewLevel = 'Simple' | 'Standard' | 'Premium' | 'Luxury';
 
 const previewData: Record<
   PreviewLevel,
   {
-    min: number;
     title: string;
     subtitle: string;
     decor: string;
@@ -22,26 +26,21 @@ const previewData: Record<
     entertainment: string;
     photography: string;
     guests: string;
-    gradient: string;
-    accent: string;
+    image: string;
   }
 > = {
   Simple: {
-    min: 30000,
     title: 'INTIMATE & SMART',
     subtitle: 'A clean celebration focused on the essentials.',
     decor: 'Minimal backdrop + balloons',
     food: 'Essential multi-item menu',
-    entertainment: 'Bluetooth / basic sound setup',
+    entertainment: 'Basic music setup',
     photography: 'Basic photography',
     guests: '30–50 Guests',
-    gradient:
-      'linear-gradient(135deg, #f6ead4 0%, #e8d2aa 50%, #c49a57 100%)',
-    accent: '#8b6329',
+    image: simpleImage,
   },
 
   Standard: {
-    min: 50000,
     title: 'BALANCED CELEBRATION',
     subtitle: 'A polished event without unnecessary overspending.',
     decor: 'Styled backdrop + entrance decor',
@@ -49,13 +48,10 @@ const previewData: Record<
     entertainment: 'DJ + sound setup',
     photography: 'Event photography',
     guests: '40–70 Guests',
-    gradient:
-      'linear-gradient(135deg, #f7e8c8 0%, #d8b56b 45%, #8f6528 100%)',
-    accent: '#765018',
+    image: standardImage,
   },
 
   Premium: {
-    min: 100000,
     title: 'PREMIUM EXPERIENCE',
     subtitle: 'More visual impact, entertainment and guest comfort.',
     decor: 'Premium themed decoration',
@@ -63,13 +59,10 @@ const previewData: Record<
     entertainment: 'Professional DJ + lighting',
     photography: 'Photo + cinematic coverage',
     guests: '70–150 Guests',
-    gradient:
-      'linear-gradient(135deg, #312519 0%, #9c742f 48%, #efd792 100%)',
-    accent: '#c9973d',
+    image: premiumImage,
   },
 
   Luxury: {
-    min: 200000,
     title: 'LUXURY CELEBRATION',
     subtitle: 'A high-impact experience designed to impress.',
     decor: 'Luxury stage + immersive decor',
@@ -77,9 +70,7 @@ const previewData: Record<
     entertainment: 'DJ + lights + entertainment',
     photography: 'Premium photo & video team',
     guests: '100–250+ Guests',
-    gradient:
-      'linear-gradient(135deg, #17120d 0%, #5f4219 48%, #d8ad54 100%)',
-    accent: '#e0bd69',
+    image: luxuryImage,
   },
 };
 
@@ -110,9 +101,8 @@ const EventPreview: React.FC = () => {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
 
-        {/* Heading */}
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b7832b]/30 bg-white/50 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#8b6329]">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b7832b]/30 bg-white/60 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#8b6329]">
             <WandSparkles className="h-4 w-4" />
             Smart Event Visualizer
           </div>
@@ -128,8 +118,7 @@ const EventPreview: React.FC = () => {
           </p>
         </div>
 
-        {/* Budget Slider */}
-        <div className="mx-auto mt-12 max-w-3xl rounded-3xl border border-[#b68b3c]/25 bg-white/60 p-6 shadow-lg backdrop-blur-sm sm:p-8">
+        <div className="mx-auto mt-12 max-w-3xl rounded-3xl border border-[#b68b3c]/25 bg-white/70 p-6 shadow-lg backdrop-blur-sm sm:p-8">
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8b6329]">
@@ -164,49 +153,51 @@ const EventPreview: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Preview */}
-        <div className="mt-8 overflow-hidden rounded-[32px] border border-[#b68b3c]/25 bg-white/60 shadow-xl">
+        <div className="mt-8 overflow-hidden rounded-[32px] border border-[#b68b3c]/25 bg-white/60 shadow-2xl">
 
-          {/* Visual */}
-          <div
-            className="relative flex min-h-[330px] items-center justify-center overflow-hidden p-8 text-center sm:min-h-[390px]"
-            style={{ background: data.gradient }}
-          >
-            <div className="absolute left-[12%] top-[18%] h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute bottom-[10%] right-[10%] h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="relative min-h-[360px] overflow-hidden sm:min-h-[470px]">
 
-            <div className="relative z-10 max-w-2xl">
+            <img
+              src={data.image}
+              alt={`${level} event preview`}
+              className="absolute inset-0 h-full w-full object-cover transition-all duration-500"
+            />
 
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md">
-                <Sparkles className="h-8 w-8 text-white" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
+
+            <div className="absolute inset-0 flex items-end justify-center p-6 text-center sm:p-10">
+
+              <div className="max-w-2xl">
+
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/30 backdrop-blur-md">
+                  <Sparkles className="h-7 w-7 text-white" />
+                </div>
+
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-white/80">
+                  Your Event Preview
+                </p>
+
+                <h3 className="mt-2 text-4xl font-black text-white sm:text-6xl">
+                  {level.toUpperCase()}
+                </h3>
+
+                <p className="mt-2 text-xl font-bold text-[#f3d99b]">
+                  {data.title}
+                </p>
+
+                <p className="mx-auto mt-3 max-w-xl text-sm font-medium text-white/85 sm:text-base">
+                  {data.subtitle}
+                </p>
+
+                <div className="mt-6 inline-flex rounded-full border border-white/30 bg-black/35 px-5 py-2 text-sm font-black text-white backdrop-blur-md">
+                  {formatBudget(budget)} Event
+                </div>
+
               </div>
-
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-white/75">
-                Your Event Preview
-              </p>
-
-              <h3 className="mt-3 text-4xl font-black text-white sm:text-6xl">
-                {level.toUpperCase()}
-              </h3>
-
-              <p className="mt-3 text-xl font-bold text-white">
-                {data.title}
-              </p>
-
-              <p className="mx-auto mt-4 max-w-xl text-sm font-medium text-white/80 sm:text-base">
-                {data.subtitle}
-              </p>
-
-              <div className="mt-7 inline-flex rounded-full border border-white/30 bg-black/20 px-5 py-2 text-sm font-black text-white backdrop-blur-md">
-                {formatBudget(budget)} Event
-              </div>
-
             </div>
           </div>
 
-          {/* Features */}
           <div className="grid gap-px bg-[#b68b3c]/15 sm:grid-cols-2 lg:grid-cols-5">
-
             <PreviewItem
               icon={<Users />}
               label="Guest Experience"
@@ -236,19 +227,17 @@ const EventPreview: React.FC = () => {
               label="Photography"
               value={data.photography}
             />
-
           </div>
         </div>
 
-        {/* Explanation */}
-        <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-[#b7832b]/20 bg-[#fffaf0]/70 p-5 text-center">
+        <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-[#b7832b]/20 bg-[#fffaf0]/80 p-5 text-center">
           <p className="text-sm font-semibold leading-relaxed text-[#62584d]">
             <span className="font-black text-[#8b6329]">
               EventBudget Insight:
             </span>{' '}
-            Increasing the budget doesn't simply make the event more expensive.
-            It changes where money can be invested across guest experience,
-            food, decoration, entertainment and memories.
+            Increasing the budget changes the quality of the venue experience,
+            decoration, food, entertainment and photography instead of simply
+            increasing the total cost.
           </p>
         </div>
 
