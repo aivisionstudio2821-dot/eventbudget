@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { EventType, Priority, EventState } from '../../types';
 import { calculateSmartAllocations } from '../../utils/budgetCalculations';
+import { autoSelectEventPlan } from '../../utils/autoPlan';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -104,6 +105,12 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     const budgetNum = Number(totalBudget);
     const guestNum = Number(guestCount);
     const allocations = calculateSmartAllocations(eventType, budgetNum, guestNum, priority);
+    const autoPlan = autoSelectEventPlan({
+  eventType,
+  guestCount: guestNum,
+  priority,
+  allocations,
+});
 
     const newEvent: EventState = {
       id: `event_${Date.now()}`,
@@ -115,18 +122,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       eventDate,
       priority,
       allocations,
-      selectedFoodItems: {},
-      customFoodPrices: {},
-      selectedThemeId: 'theme_birthday',
-      selectedDecorItems: {},
-      customDecorPrices: {},
-      selectedEntertainment: {},
-      customEntertainmentPrices: {},
-      selectedPhotography: {},
-      customPhotographyPrices: {},
-      selectedVenueId: 'venue_society_hall',
-      selectedVenueAddons: {},
-      customVenueAddonPrices: {},
+      ...autoPlan,
       miscItems: [
         { id: 'misc_cake', name: 'Celebration Cake', price: 2000, selected: true },
       ],
