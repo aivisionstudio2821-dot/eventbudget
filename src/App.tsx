@@ -19,6 +19,7 @@ import {
 import { EventState, CategoryKey, VendorQuote, CategoryAllocations } from './types';
 import { createDemoEvent } from './data/demoEvent';
 import { Navbar } from './components/layout/Navbar';
+import { TeamSection } from './components/TeamSection';
 import { Footer } from './components/layout/Footer';
 import { BusinessModel } from './components/layout/BusinessModel';
 import { HeroSection } from './components/landing/HeroSection';
@@ -570,7 +571,7 @@ export const App: React.FC = () => {
         onSubmit={handleCreateEvent}
         onLoadDemo={handleLoadDemo}
       />
-
+      <TeamSection />
     </div>
   );
 };
