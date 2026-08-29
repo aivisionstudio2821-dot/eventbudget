@@ -9,10 +9,10 @@ import {
   WandSparkles,
 } from 'lucide-react';
 
-import simpleImage from '../assets/event-preview/simple.png.png';
-import standardImage from '../assets/event-preview/standard.png.png';
-import premiumImage from '../assets/event-preview/premium.png.png';
-import luxuryImage from '../assets/event-preview/luxury.png.png';
+import simpleImage from '../assets/event-preview/simple.png';
+import standardImage from '../assets/event-preview/standard.png';
+import premiumImage from '../assets/event-preview/premium.png';
+import luxuryImage from '../assets/event-preview/luxury.png';
 
 type PreviewLevel = 'Simple' | 'Standard' | 'Premium' | 'Luxury';
 
