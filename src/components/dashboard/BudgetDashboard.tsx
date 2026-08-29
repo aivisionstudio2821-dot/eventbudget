@@ -29,6 +29,14 @@ import { InteractiveBudgetEditor } from './InteractiveBudgetEditor';
 import { WhatCanIGet } from './WhatCanIGet';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
+import {
+  FOOD_ITEMS,
+  DECOR_ITEMS,
+  ENTERTAINMENT_ITEMS,
+  PHOTOGRAPHY_ITEMS,
+  VENUE_TYPES,
+  VENUE_ADDONS,
+} from '../../data/initialData';
 
 interface BudgetDashboardProps {
   event: EventState;
