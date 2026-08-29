@@ -80,20 +80,141 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
   // Rebalance Auto Fix
   const handleFixMyBudget = () => {
-    const { newAllocations } = rebalanceEventAllocations(event, overAmount);
-    
-    // Also adjust any excessive items if needed
-    const updated: EventState = {
-      ...event,
-      allocations: newAllocations,
-      // If DJ was upgraded in demo, bring custom price to fit allocation
-      customEntertainmentPrices: {
-        ...event.customEntertainmentPrices,
-        ent_basic_dj: Math.min(newAllocations.dj || 6000, 6000),
-      }
-    };
-    onUpdateEvent(updated);
-    trigge
+  if (overAmount <= 0) return;
+
+  const { newAllocations } = rebalanceEventAllocations(event, overAmount);
+
+  let updated: EventState = {
+    ...event,
+    allocations: newAllocations,
+    customFoodPrices: { ...event.customFoodPrices },
+    customDecorPrices: { ...event.customDecorPrices },
+    customEntertainmentPrices: { ...event.customEntertainmentPrices },
+    customPhotographyPrices: { ...event.customPhotographyPrices },
+    customVenueAddonPrices: { ...event.customVenueAddonPrices },
+    miscItems: (event.miscItems || []).map(item => ({ ...item })),
+  };
+
+  let remaining =
+    calculateTotalPlanned(updated) +
+    (updated.allocations.buffer || 0) -
+    totalBudget;
+
+  const reduceItems = (
+    selected: Record<string, boolean>,
+    prices: Record<string, number>,
+    items: Array<{ id: string; defaultPrice: number }>
+  ) => {
+    for (const [id, isSelected] of Object.entries(selected || {})) {
+      if (!isSelected || remaining <= 0) continue;
+
+      const item = items.find(x => x.id === id);
+
+      const currentPrice =
+        prices[id] !== undefined
+          ? prices[id]
+          : item?.defaultPrice || 0;
+
+      const reduction = Math.min(currentPrice, remaining);
+
+      prices[id] = currentPrice - reduction;
+      remaining -= reduction;
+    }
+  };
+
+  // Miscellaneous expenses first
+  for (const item of updated.miscItems || []) {
+    if (remaining <= 0) break;
+    if (item.selected === false || item.price <= 0) continue;
+
+    const reduction = Math.min(item.price, remaining);
+    item.price -= reduction;
+    remaining -= reduction;
+  }
+
+  // Flexible categories
+  reduceItems(
+    updated.selectedPhotography,
+    updated.customPhotographyPrices,
+    PHOTOGRAPHY_ITEMS
+  );
+
+  reduceItems(
+    updated.selectedDecorItems,
+    updated.customDecorPrices,
+    DECOR_ITEMS
+  );
+
+  reduceItems(
+    updated.selectedEntertainment,
+    updated.customEntertainmentPrices,
+    ENTERTAINMENT_ITEMS
+  );
+
+  // Venue add-ons
+  reduceItems(
+    updated.selectedVenueAddons,
+    updated.customVenueAddonPrices,
+    VENUE_ADDONS
+  );
+
+  // Venue itself
+  if (remaining > 0 && updated.selectedVenueId) {
+    const venue = VENUE_TYPES.find(
+      v => v.id === updated.selectedVenueId
+    );
+
+    const currentVenuePrice =
+      updated.customVenuePrice !== undefined
+        ? updated.customVenuePrice
+        : venue?.defaultPrice || 0;
+
+    const reduction = Math.min(currentVenuePrice, remaining);
+
+    updated.customVenuePrice =
+      currentVenuePrice - reduction;
+
+    remaining -= reduction;
+  }
+
+  // Food is reduced last
+  if (remaining > 0) {
+    const guests = Math.max(1, updated.guestCount || 1);
+
+    for (const [id, isSelected] of Object.entries(
+      updated.selectedFoodItems || {}
+    )) {
+      if (!isSelected || remaining <= 0) continue;
+
+      const item = FOOD_ITEMS.find(x => x.id === id);
+
+      const perGuest =
+        updated.customFoodPrices[id] !== undefined
+          ? updated.customFoodPrices[id]
+          : item?.defaultPrice || 0;
+
+      const totalItemCost = perGuest * guests;
+      const reduction = Math.min(totalItemCost, remaining);
+
+      updated.customFoodPrices[id] = Math.max(
+        0,
+        perGuest - reduction / guests
+      );
+
+      remaining -= reduction;
+    }
+  }
+
+  onUpdateEvent(updated);
+
+  const finalCommitted =
+    calculateTotalPlanned(updated) +
+    (updated.allocations.buffer || 0);
+
+  if (finalCommitted <= totalBudget + 1) {
+    triggerConfetti();
+  }
+};
 
   // Curated preset apply
   const handleApplyCuratedPackage = () => {
