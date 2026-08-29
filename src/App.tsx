@@ -574,7 +574,13 @@ export const App: React.FC = () => {
         onLoadDemo={handleLoadDemo}
       />
       <EventPreview />
-      <ChallengeMode />
+      <ChallengeMode  budget={event?.totalBudget ?? 50000}
+  guestCount={event?.guestCount ?? 50}
+  eventKey={
+    event
+      ? `${event.eventType}-${event.totalBudget}-${event.guestCount}-${event.priority}`
+      : 'demo'
+  } />
       <TeamSection />
     </div>
   );
