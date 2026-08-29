@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  Sparkles,
-  Zap,
   ArrowRight,
+  Sparkles,
   ShieldCheck,
-  TrendingDown,
-  HeartHandshake
+  TrendingUp,
+  MessageCircle,
+  Zap,
+  LayoutDashboard,
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -15,210 +16,113 @@ interface HeroSectionProps {
   onScrollToDashboard: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({
+const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenCreateModal,
   onLoadDemo,
   hasActiveEvent,
   onScrollToDashboard,
 }) => {
-  const highlights = [
-    {
-      icon: '💰',
-      title: 'Smart Budget Planning',
-      desc: 'Dynamic allocation by event type & priority'
-    },
-    {
-      icon: '🍽️',
-      title: 'Food Menu Builder',
-      desc: 'Per-plate calculation with live counters'
-    },
-    {
-      icon: '🎈',
-      title: 'Decoration Planner',
-      desc: '10+ themes & customizable stage setups'
-    },
-    {
-      icon: '🎧',
-      title: 'DJ & Entertainment',
-      desc: 'Sound packages, lighting, dhol & live artists'
-    },
-    {
-      icon: '📸',
-      title: 'Photography Planning',
-      desc: 'Candid, traditional, drone & Instagram reels'
-    },
-    {
-      icon: '📍',
-      title: 'Local Ahmedabad Vendors',
-      desc: 'Direct phone & pre-filled WhatsApp quotes'
-    },
-    {
-      icon: '💬',
-      title: 'Quote Comparison',
-      desc: 'Real vendor quotes override estimates'
-    },
-    {
-      icon: '⚡',
-      title: 'Instant Budget Fix',
-      desc: '1-click smart rebalancing protecting top priority'
-    },
-  ];
-
   return (
-    <section
-      id="hero-section"
-      className="relative pt-8 pb-16 sm:pt-14 sm:pb-24 overflow-hidden"
-    >
-      {/* Premium Gold / Emerald Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-amber-500/15 via-yellow-300/5 to-emerald-500/10 blur-[140px] pointer-events-none rounded-full" />
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
+      {/* Soft luxury background effects */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-amber-300/10 blur-[120px]" />
+        <div className="absolute right-[-120px] top-32 h-[320px] w-[320px] rounded-full bg-emerald-400/10 blur-[100px]" />
+        <div className="absolute bottom-[-160px] left-[-100px] h-[360px] w-[360px] rounded-full bg-[#d8b97b]/10 blur-[110px]" />
+      </div>
 
-      <div className="absolute top-10 right-10 w-96 h-96 bg-amber-500/10 blur-[120px] pointer-events-none rounded-full" />
-
-      <div className="absolute bottom-10 left-10 w-96 h-96 bg-emerald-500/5 blur-[120px] pointer-events-none rounded-full" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Tagline */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#11130f]/90 border border-amber-400/30 text-xs sm:text-sm font-semibold text-amber-100 shadow-lg shadow-amber-950/20">
-
-            <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-
-            <Sparkles className="w-4 h-4 text-amber-400" />
-
-            <span>
+        <div className="mb-7 flex justify-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#d8b97b]/60 bg-[#211b15] px-4 py-2 shadow-lg shadow-[#211b15]/10">
+            <Sparkles className="h-4 w-4 text-[#e6c675]" />
+            <span className="text-xs font-bold tracking-wide text-[#f7e7bd] sm:text-sm">
               “You set the budget. We plan the celebration.”
             </span>
           </div>
         </div>
 
         {/* Main Hero */}
-        <div className="text-center max-w-4xl mx-auto">
-
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] font-heading">
-
+        <div className="mx-auto max-w-5xl text-center">
+          <h1 className="text-4xl font-black leading-[1.05] tracking-tight text-[#211b15] sm:text-6xl lg:text-7xl">
             PLAN THE EVENT.
-
-            <span className="block mt-1 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#f7e7b0] via-[#d6b36a] to-[#f0c96c]">
+            <span className="mt-1 block bg-gradient-to-r from-[#a87924] via-[#d4aa4f] to-[#b88324] bg-clip-text text-transparent">
               NOT THE OVERSPENDING.
             </span>
-
           </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-
+          <p className="mx-auto mt-6 max-w-3xl text-base font-medium leading-relaxed text-[#62584d] sm:text-lg lg:text-xl">
             Tell us your budget and guest list.{' '}
-
-            <strong className="text-white font-semibold">
+            <span className="font-extrabold text-[#211b15]">
               EventBudget
-            </strong>{' '}
-
-            turns it into a realistic, itemized event plan with local
-            Ahmedabad vendor connections.
-
+            </span>{' '}
+            turns it into a realistic, itemized event plan with smart
+            allocations and local Ahmedabad vendor options.
           </p>
 
-          {/* CTA */}
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto sm:max-w-none">
-
+          {/* Main Buttons */}
+          <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <button
               onClick={onOpenCreateModal}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-extrabold text-[#090b0c] bg-gradient-to-r from-[#c99a42] via-[#f0d58a] to-[#c99a42] hover:from-[#ddb35e] hover:via-[#ffe7a6] hover:to-[#ddb35e] shadow-xl shadow-amber-900/25 hover:shadow-amber-700/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+              className="group inline-flex min-w-[235px] items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#c89b3c] via-[#e0bd69] to-[#c99b3d] px-7 py-4 text-sm font-black tracking-wide text-[#211b15] shadow-xl shadow-[#c89b3c]/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#c89b3c]/30"
             >
-              <span>PLAN MY EVENT</span>
-              <ArrowRight className="w-5 h-5" />
+              PLAN MY EVENT
+              <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
 
             <button
               onClick={onLoadDemo}
-              className="w-full sm:w-auto px-7 py-4 rounded-2xl text-base font-extrabold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-950/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5"
+              className="group inline-flex min-w-[280px] items-center justify-center gap-3 rounded-2xl border border-[#c9a85e]/50 bg-white/70 px-7 py-4 text-sm font-black tracking-wide text-[#9b7228] shadow-lg shadow-[#211b15]/5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-[#c89b3c] hover:bg-white hover:text-[#76531b]"
             >
-              <Zap className="w-5 h-5 fill-amber-300 text-amber-300 animate-pulse" />
-
-              <span>
-                ⚡ LOAD DEMO EVENT (₹50k Birthday)
-              </span>
+              <Zap className="h-5 w-5 text-[#c5912d]" />
+              LOAD DEMO EVENT (₹50k Birthday)
             </button>
-
           </div>
 
-          {/* Active Event */}
+          {/* Active event button */}
           {hasActiveEvent && (
-            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-amber-950/20 border border-amber-400/30 text-xs text-amber-100">
-
-              <span className="font-semibold">
-                ✨ Active Event Loaded!
-              </span>
-
+            <div className="mt-5 flex justify-center">
               <button
                 onClick={onScrollToDashboard}
-                className="underline hover:text-white font-bold flex items-center gap-1"
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-600/20 bg-emerald-50/90 px-5 py-2.5 text-xs font-bold text-emerald-800 shadow-sm transition-all hover:border-emerald-600/40 hover:bg-emerald-100"
               >
-                Jump to Dashboard ↓
+                <LayoutDashboard className="h-4 w-4" />
+                Active Event Loaded! — Jump to Dashboard
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
-
             </div>
           )}
 
-          {/* Trust Points */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs sm:text-sm text-slate-400 font-medium">
-
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Zero Silent Overspending</span>
+          {/* Trust points */}
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#62584d]">
+              <ShieldCheck className="h-5 w-5 text-emerald-700" />
+              Zero Silent Overspending
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <TrendingDown className="w-4 h-4 text-amber-400" />
-              <span>Real Market Price Ranges</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#62584d]">
+              <TrendingUp className="h-5 w-5 text-[#b6852d]" />
+              Real Market Price Ranges
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <HeartHandshake className="w-4 h-4 text-emerald-400" />
-              <span>Direct WhatsApp Quotes</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#62584d]">
+              <MessageCircle className="h-5 w-5 text-emerald-700" />
+              Direct WhatsApp Quotes
             </div>
-
           </div>
         </div>
 
-        {/* Features */}
-        <div className="mt-16 sm:mt-20">
+        {/* Bottom divider */}
+        <div className="mx-auto mt-16 max-w-5xl">
+          <div className="h-px bg-gradient-to-r from-transparent via-[#c9a85e]/50 to-transparent" />
 
-          <div className="text-center mb-8">
-            <p className="text-xs uppercase font-bold tracking-widest text-slate-400">
-              Everything you need to plan smarter & celebrate better
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-
-            {highlights.map((item, idx) => (
-
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-[#0d1212]/80 backdrop-blur-md border border-slate-800 hover:border-amber-400/35 hover:bg-[#131816]/90 transition-all duration-200 group shadow-md"
-              >
-
-                <div className="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">
-                  {item.icon}
-                </div>
-
-                <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-300 transition-colors">
-                  {item.title}
-                </h3>
-
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {item.desc}
-                </p>
-
-              </div>
-
-            ))}
-
-          </div>
+          <p className="mt-5 text-center text-[10px] font-black uppercase tracking-[0.28em] text-[#8b7658] sm:text-xs">
+            Everything you need to plan smarter & celebrate better
+          </p>
         </div>
-
       </div>
     </section>
   );
 };
+
+export default HeroSection;
