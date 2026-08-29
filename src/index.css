@@ -2,131 +2,432 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   EVENTBUDGET — PREMIUM LUXURY THEME
+   Black • Champagne Gold • Emerald
+   ========================================================= */
+
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+
   color-scheme: dark;
+
+  --eb-black: #040606;
+  --eb-black-soft: #070a0b;
+  --eb-charcoal: #0b1011;
+  --eb-card: rgba(12, 17, 18, 0.72);
+
+  --eb-gold: #d6b36a;
+  --eb-gold-light: #f0d89a;
+  --eb-gold-dark: #9f7b38;
+
+  --eb-emerald: #2dd4a3;
+
+  --eb-text: #f7f4ec;
+  --eb-muted: #9da6a4;
 }
 
-h1, h2, h3, .font-heading {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: -0.02em;
-}
 
-.font-mono-num {
-  font-family: 'Space Grotesk', monospace, sans-serif;
-}
-
-/* Custom modern scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #080b11;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Glassmorphism utility classes */
-.glass-card {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card-hover:hover {
-  background: rgba(23, 35, 63, 0.85);
-  border-color: rgba(168, 85, 247, 0.35);
-  box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.2);
-  transform: translateY(-2px);
-}
-
-.glass-input {
-  background: rgba(19, 27, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.2s ease;
-}
-
-.glass-input:focus {
-  border-color: #a855f7;
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
-  outline: none;
-}
-
-/* Glow effects */
-.glow-purple {
-  box-shadow: 0 0 35px -5px rgba(168, 85, 247, 0.3);
-}
-
-.glow-pink {
-  box-shadow: 0 0 35px -5px rgba(236, 72, 153, 0.3);
-}
-
-.glow-emerald {
-  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.3);
-} 
-
-
-/* EventBudget Premium Black & Gold Background */
+/* =========================================================
+   BASE
+   ========================================================= */
 
 html {
-  background: #06090b;
+  min-height: 100%;
+  background: #040606;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  color: #f5f3ed;
+  overflow-x: hidden;
+
+  color: var(--eb-text);
 
   background:
-    radial-gradient(circle at 15% 10%,
-      rgba(214, 179, 106, 0.14),
-      transparent 30%),
-    radial-gradient(circle at 88% 18%,
-      rgba(45, 212, 163, 0.07),
-      transparent 28%),
-    radial-gradient(circle at 50% 90%,
-      rgba(214, 179, 106, 0.05),
-      transparent 35%),
-    linear-gradient(160deg,
-      #06090b 0%,
-      #0b1013 45%,
-      #080c0e 100%);
+    radial-gradient(
+      ellipse 70% 45% at 50% -5%,
+      rgba(214, 179, 106, 0.17) 0%,
+      rgba(214, 179, 106, 0.055) 38%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 45% 40% at -5% 35%,
+      rgba(214, 179, 106, 0.065) 0%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 45% 45% at 105% 42%,
+      rgba(45, 212, 163, 0.045) 0%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 55% 40% at 50% 105%,
+      rgba(214, 179, 106, 0.045) 0%,
+      transparent 70%
+    ),
+
+    linear-gradient(
+      180deg,
+      #040606 0%,
+      #080b0c 25%,
+      #090d0e 50%,
+      #070a0b 75%,
+      #030505 100%
+    );
 
   background-attachment: fixed;
-  overflow-x: hidden;
 }
+
+
+/* Soft luxury light */
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
+
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      115deg,
+      transparent 10%,
+      rgba(255, 238, 194, 0.018) 38%,
+      rgba(255, 238, 194, 0.032) 50%,
+      transparent 66%
+    );
+
+  opacity: 0.8;
+}
+
+
+/* Very subtle premium grid */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+
   pointer-events: none;
   z-index: 0;
 
   background-image:
-    linear-gradient(rgba(214,179,106,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(214,179,106,0.018) 1px, transparent 1px);
+    linear-gradient(
+      rgba(214, 179, 106, 0.012) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(214, 179, 106, 0.012) 1px,
+      transparent 1px
+    );
 
-  background-size: 48px 48px;
+  background-size: 70px 70px;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.55),
+      transparent 72%
+    );
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.55),
+      transparent 72%
+    );
 }
+
 
 #root {
   position: relative;
   z-index: 1;
+
   min-height: 100vh;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.font-mono-num {
+  font-family: 'Space Grotesk', monospace, sans-serif;
+}
+
+
+/* =========================================================
+   TEXT SELECTION
+   ========================================================= */
+
+::selection {
+  background: rgba(214, 179, 106, 0.28);
+  color: #fff8e7;
+}
+
+
+/* =========================================================
+   PREMIUM SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #040606;
+}
+
+::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(
+      180deg,
+      #80652f,
+      #b89550
+    );
+
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(
+      180deg,
+      #b89550,
+      #d6b36a
+    );
+}
+
+
+/* =========================================================
+   GLASS CARDS
+   ========================================================= */
+
+.glass-card {
+  position: relative;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(17, 23, 23, 0.86),
+      rgba(8, 12, 13, 0.72)
+    );
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(214, 179, 106, 0.11);
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* Card hover */
+
+.glass-card-hover {
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-3px);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 26, 25, 0.92),
+      rgba(9, 14, 14, 0.82)
+    );
+
+  border-color: rgba(214, 179, 106, 0.30);
+
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.38),
+    0 0 35px rgba(214, 179, 106, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.glass-input {
+  color: #f7f4ec;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(12, 17, 18, 0.9),
+      rgba(7, 10, 11, 0.88)
+    );
+
+  border: 1px solid rgba(214, 179, 106, 0.14);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.glass-input:hover {
+  border-color: rgba(214, 179, 106, 0.28);
+}
+
+.glass-input:focus {
+  outline: none;
+
+  border-color: rgba(214, 179, 106, 0.72);
+
+  background: rgba(10, 14, 15, 0.96);
+
+  box-shadow:
+    0 0 0 3px rgba(214, 179, 106, 0.10),
+    0 0 25px rgba(214, 179, 106, 0.06);
+}
+
+.glass-input::placeholder {
+  color: rgba(200, 205, 202, 0.45);
+}
+
+
+/* =========================================================
+   PREMIUM GLOW UTILITIES
+   Existing class names preserved so components don't break.
+   ========================================================= */
+
+.glow-purple {
+  box-shadow:
+    0 0 40px -8px rgba(214, 179, 106, 0.26);
+}
+
+.glow-pink {
+  box-shadow:
+    0 0 40px -8px rgba(214, 179, 106, 0.20);
+}
+
+.glow-emerald {
+  box-shadow:
+    0 0 40px -8px rgba(45, 212, 163, 0.24);
+}
+
+
+/* =========================================================
+   OPTIONAL PREMIUM UTILITIES
+   ========================================================= */
+
+.gold-text {
+  color: var(--eb-gold);
+}
+
+.gold-gradient-text {
+  background:
+    linear-gradient(
+      100deg,
+      #b8924c 0%,
+      #f0d89a 45%,
+      #d6b36a 75%,
+      #a98542 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+}
+
+.gold-border {
+  border-color: rgba(214, 179, 106, 0.30);
+}
+
+.premium-divider {
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(214, 179, 106, 0.35),
+      transparent
+    );
+}
+
+
+/* =========================================================
+   BUTTON POLISH
+   ========================================================= */
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(214, 179, 106, 0.7);
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  body {
+    background:
+      radial-gradient(
+        ellipse 95% 35% at 50% 0%,
+        rgba(214, 179, 106, 0.13),
+        transparent 70%
+      ),
+
+      radial-gradient(
+        ellipse 70% 35% at 100% 45%,
+        rgba(45, 212, 163, 0.035),
+        transparent 70%
+      ),
+
+      linear-gradient(
+        180deg,
+        #040606 0%,
+        #080b0c 50%,
+        #040606 100%
+      );
+
+    background-attachment: fixed;
+  }
+
+  body::after {
+    background-size: 54px 54px;
+  }
+
+  .glass-card {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
 }
