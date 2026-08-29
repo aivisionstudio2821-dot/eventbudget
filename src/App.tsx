@@ -19,6 +19,7 @@ import {
 import { EventState, CategoryKey, VendorQuote, CategoryAllocations } from './types';
 import { createDemoEvent } from './data/demoEvent';
 import { EventPreview } from './components/EventPreview';
+import { ChallengeMode } from './components/ChallengeMode';
 import { Navbar } from './components/layout/Navbar';
 import { TeamSection } from './components/TeamSection';
 import { Footer } from './components/layout/Footer';
@@ -573,6 +574,7 @@ export const App: React.FC = () => {
         onLoadDemo={handleLoadDemo}
       />
       <EventPreview />
+      <ChallengeMode />
       <TeamSection />
     </div>
   );
