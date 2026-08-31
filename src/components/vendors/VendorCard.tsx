@@ -5,11 +5,10 @@ import {
   MapPin,
   CheckCircle2,
   Star,
-  PlusCircle,
   FileText,
-  Sparkles
 } from 'lucide-react';
-import { Vendor, EventState, CategoryKey } from '../../types';
+
+import { Vendor, EventState } from '../../types';
 import { formatINR } from '../../utils/currencyFormatter';
 
 interface VendorCardProps {
@@ -23,19 +22,22 @@ export const VendorCard: React.FC<VendorCardProps> = ({
   event,
   onOpenQuoteModal,
 }) => {
-  // Compute category budget for this vendor
-  const categoryBudget = event ? (event.allocations[vendor.categoryKey] || 0) : 0;
+  const categoryBudget = event
+    ? event.allocations[vendor.categoryKey] || 0
+    : 0;
 
-  // Generate dynamic pre-filled WhatsApp message URL
   const generateWhatsAppUrl = () => {
     if (!event) {
       const defaultText = encodeURIComponent(
         `Hi ${vendor.name}, I found your service on EventBudget. Please share your event packages and availability.`
       );
+
       return `https://wa.me/${vendor.whatsapp}?text=${defaultText}`;
     }
 
-    const eventDateFormatted = new Date(event.eventDate).toLocaleDateString('en-IN', {
+    const eventDateFormatted = new Date(
+      event.eventDate
+    ).toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -46,107 +48,140 @@ I am planning a ${event.eventType} event in ${event.city} for ${event.guestCount
 My approximate budget for ${vendor.category} is ${formatINR(categoryBudget)}.
 Please share your quotation and availability.`;
 
-    return `https://wa.me/${vendor.whatsapp}?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${vendor.whatsapp}?text=${encodeURIComponent(
+      message
+    )}`;
   };
 
   return (
-    <div className="p-5 rounded-3xl bg-[#0f172a]/80 border border-slate-800 hover:border-purple-500/40 hover:bg-[#141d33]/90 transition-all duration-200 flex flex-col justify-between group shadow-lg">
-      
+    <div className="group flex flex-col justify-between rounded-[24px] border border-[#ded5c8] bg-white p-5 shadow-[0_10px_30px_rgba(40,32,22,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#b8955f] hover:shadow-[0_18px_38px_rgba(40,32,22,0.11)]">
+
       <div>
-        {/* Top Badges */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 uppercase tracking-wider">
+
+        {/* TOP ROW */}
+
+        <div className="mb-4 flex items-center justify-between gap-2">
+
+          <span className="rounded-full border border-[#d6c3a3] bg-[#f5ead9] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-[#7f6137]">
             {vendor.category}
           </span>
 
-          <div className="flex items-center gap-1 text-xs font-bold text-amber-400">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <div className="flex items-center gap-1 text-xs font-black text-[#a77a35]">
+            <Star className="h-3.5 w-3.5 fill-[#c99b50] text-[#c99b50]" />
             <span>{vendor.rating || 4.9}</span>
           </div>
+
         </div>
 
-        {/* Vendor Title */}
-        <div className="mb-2">
+        {/* VENDOR NAME */}
+
+        <div className="mb-3">
+
           <div className="flex items-center gap-1.5">
-            <h4 className="text-base font-bold text-white group-hover:text-purple-300 transition-colors">
+
+            <h4 className="text-base font-black text-[#2e2923] transition-colors group-hover:text-[#8d6938]">
               {vendor.name}
             </h4>
+
             {vendor.verified && (
               <span title="Verified Service Provider">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-[#738257]" />
               </span>
             )}
+
           </div>
-          <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
-            <span>{vendor.area}, {vendor.city}</span>
+
+          <p className="mt-1 flex items-center gap-1 text-xs text-[#82796d]">
+            <MapPin className="h-3 w-3 shrink-0 text-[#b78843]" />
+            <span>
+              {vendor.area}, {vendor.city}
+            </span>
           </p>
+
         </div>
 
-        {/* Description */}
-        <p className="text-xs text-slate-400 leading-relaxed mb-4">
+        {/* DESCRIPTION */}
+
+        <p className="mb-4 text-xs leading-relaxed text-[#71695f]">
           {vendor.description}
         </p>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        {/* TAGS */}
+
+        <div className="mb-4 flex flex-wrap gap-1.5">
+
           {vendor.tags.map((tag, idx) => (
             <span
               key={idx}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300"
+              className="rounded-md border border-[#e2ddd5] bg-[#f6f4f0] px-2 py-1 text-[10px] font-semibold text-[#6f675c]"
             >
               {tag}
             </span>
           ))}
+
         </div>
 
-        {/* Smart Category Budget Context */}
+        {/* CATEGORY BUDGET */}
+
         {event && categoryBudget > 0 && (
-          <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20 mb-4 text-[11px] text-purple-200">
-            <span>Your {vendor.category} Budget: </span>
-            <strong className="text-amber-300 font-bold">{formatINR(categoryBudget)}</strong>
-            <p className="text-[10px] text-slate-400 mt-0.5">
-              Contact vendor for a quote within this budget target.
+          <div className="mb-4 rounded-xl border border-[#dac5a3] bg-[#f7efe1] p-3">
+
+            <div className="flex items-center justify-between gap-2">
+
+              <span className="text-[10px] font-bold uppercase tracking-wide text-[#88765e]">
+                Your {vendor.category} Budget
+              </span>
+
+              <strong className="text-sm font-black text-[#856134]">
+                {formatINR(categoryBudget)}
+              </strong>
+
+            </div>
+
+            <p className="mt-1 text-[10px] leading-relaxed text-[#928574]">
+              Contact the vendor and compare their quotation with this target.
             </p>
+
           </div>
         )}
+
       </div>
 
-      {/* Action Buttons */}
-      <div className="pt-3 border-t border-slate-800/80 space-y-2">
+      {/* ACTIONS */}
+
+      <div className="space-y-2 border-t border-[#e6e0d7] pt-4">
+
         <div className="grid grid-cols-2 gap-2">
-          
-          {/* Tel: Call Button */}
+
           <a
             href={`tel:${vendor.phone}`}
-            className="py-2.5 px-3 rounded-xl text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all flex items-center justify-center gap-1.5 active:scale-95 text-center"
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-[#ddd6cc] bg-[#f5f3ef] px-3 py-2.5 text-xs font-black text-[#403a33] transition-all hover:bg-[#ebe7df] active:scale-95"
           >
-            <Phone className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Call</span>
+            <Phone className="h-3.5 w-3.5 text-[#8b6738]" />
+            Call
           </a>
 
-          {/* WhatsApp Direct Action */}
           <a
             href={generateWhatsAppUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-3 rounded-xl text-xs font-bold text-slate-950 bg-[#25D366] hover:bg-[#20bd5a] transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow text-center"
+            className="flex items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-3 py-2.5 text-xs font-black text-[#102516] shadow-sm transition-all hover:bg-[#20bd5a] active:scale-95"
           >
-            <MessageCircle className="w-3.5 h-3.5 fill-slate-950" />
-            <span>WhatsApp</span>
+            <MessageCircle className="h-3.5 w-3.5 fill-[#102516]" />
+            WhatsApp
           </a>
 
         </div>
 
-        {/* Add Quote Button */}
         <button
           type="button"
           onClick={() => onOpenQuoteModal(vendor)}
-          className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-purple-300 hover:text-white hover:bg-purple-600/30 border border-purple-500/30 transition-all flex items-center justify-center gap-1.5 active:scale-95"
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#b9965e] bg-[#211d18] px-3 py-2.5 text-xs font-black text-[#e5c17f] transition-all hover:bg-black active:scale-95"
         >
-          <FileText className="w-3.5 h-3.5" />
-          <span>+ Enter Vendor Quote</span>
+          <FileText className="h-3.5 w-3.5" />
+          Enter Vendor Quote
         </button>
+
       </div>
 
     </div>
