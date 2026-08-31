@@ -21,15 +21,14 @@ import {
 } from '../../types';
 
 import { formatINR } from '../../utils/currencyFormatter';
-
 import { calculateTotalPlanned } from '../../utils/budgetCalculations';
-
 import { calculateEventHealthScore } from '../../utils/eventScoring';
 
 import { BudgetDonutChart } from './BudgetDonutChart';
 import { CategoryCards } from './CategoryCards';
 import { InteractiveBudgetEditor } from './InteractiveBudgetEditor';
 import { WhatCanIGet } from './WhatCanIGet';
+import { PlanExplanation } from './PlanExplanation';
 import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
@@ -64,9 +63,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
   const isOverBudget = netCushion < 0;
   const overAmount = Math.abs(netCushion);
 
-  const costPerGuest = Math.round(
-    plannedSpend / guestCount
-  );
+  const costPerGuest = Math.round(plannedSpend / guestCount);
 
   const healthData = calculateEventHealthScore(event);
 
@@ -75,12 +72,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: [
-        '#b58a47',
-        '#ead7ad',
-        '#f5efe4',
-        '#2c2419',
-      ],
+      colors: ['#b58a47', '#ead7ad', '#f5efe4', '#2c2419'],
     });
   };
 
@@ -113,8 +105,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
         photo_basic: true,
       },
 
-      selectedVenueId:
-        'venue_society_hall',
+      selectedVenueId: 'venue_society_hall',
     };
 
     onUpdateEvent(updated);
@@ -207,9 +198,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
                 👥 {event.guestCount} Guests
                 &nbsp; • &nbsp;
                 📅{' '}
-                {new Date(
-                  event.eventDate
-                ).toLocaleDateString(
+                {new Date(event.eventDate).toLocaleDateString(
                   'en-IN',
                   {
                     day: 'numeric',
@@ -230,22 +219,16 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() =>
-                setShowCanIAddModal(true)
-              }
+              onClick={() => setShowCanIAddModal(true)}
               className="flex items-center gap-2 rounded-xl border border-[#cbb996]/25 bg-white/5 px-4 py-2.5 text-xs font-bold text-[#efe5d4] transition-all hover:-translate-y-0.5 hover:bg-white/10 active:translate-y-0"
             >
               <HelpCircle className="h-4 w-4 text-[#d9ba7d]" />
 
-              <span>
-                Can I Add This?
-              </span>
+              <span>Can I Add This?</span>
             </button>
 
             <button
-              onClick={() =>
-                setShowEditor(!showEditor)
-              }
+              onClick={() => setShowEditor(!showEditor)}
               className="flex items-center gap-2 rounded-xl border border-[#d0ae6e]/35 bg-[#d0ae6e]/10 px-4 py-2.5 text-xs font-bold text-[#efd7a9] transition-all hover:-translate-y-0.5 hover:bg-[#d0ae6e]/20 active:translate-y-0"
             >
               <Sliders className="h-4 w-4" />
@@ -263,7 +246,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       {/* KPI CARDS */}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
-
         {/* TOTAL BUDGET */}
 
         <div className="rounded-2xl border border-[#ddd0bb] bg-[#fffaf1] p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] sm:p-5">
@@ -334,9 +316,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
                 : 'text-[#607044]'
             }`}
           >
-            {formatINR(
-              remainingBudget
-            )}
+            {formatINR(remainingBudget)}
           </p>
 
           <p className="mt-1 text-[10px] text-[#9b8d79]">
@@ -358,15 +338,12 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </div>
 
           <p className="mt-2 font-mono-num text-xl font-black text-[#75572f] sm:text-2xl">
-            {formatINR(
-              bufferAllocated
-            )}
+            {formatINR(bufferAllocated)}
           </p>
 
           <p className="mt-1 text-[10px] text-[#9b8d79]">
             {(
-              (bufferAllocated /
-                (totalBudget || 1)) *
+              (bufferAllocated / (totalBudget || 1)) *
               100
             ).toFixed(0)}
             % contingency
@@ -385,9 +362,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </div>
 
           <p className="mt-2 font-mono-num text-xl font-black text-[#75572f] sm:text-2xl">
-            {formatINR(
-              costPerGuest
-            )}
+            {formatINR(costPerGuest)}
           </p>
 
           <p className="mt-1 text-[10px] text-[#9b8d79]">
@@ -399,9 +374,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
         <button
           type="button"
-          onClick={() =>
-            setShowHealthModal(true)
-          }
+          onClick={() => setShowHealthModal(true)}
           className="group rounded-2xl border border-[#d1bd98] bg-gradient-to-br from-[#f6ead5] to-[#fffaf1] p-4 text-left shadow-[0_8px_24px_rgba(64,47,28,0.08)] transition-all hover:-translate-y-1 hover:border-[#aa8147] hover:shadow-[0_14px_30px_rgba(64,47,28,0.12)] sm:p-5"
         >
           <div className="flex items-center justify-between">
@@ -416,8 +389,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
             <p
               className="font-mono-num text-xl font-black sm:text-2xl"
               style={{
-                color:
-                  healthData.statusColor,
+                color: healthData.statusColor,
               }}
             >
               {healthData.overallScore}
@@ -431,15 +403,13 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           <p
             className="mt-1 flex items-center gap-1.5 text-[10px] font-bold"
             style={{
-              color:
-                healthData.statusColor,
+              color: healthData.statusColor,
             }}
           >
             <span
               className="h-1.5 w-1.5 rounded-full"
               style={{
-                backgroundColor:
-                  healthData.statusColor,
+                backgroundColor: healthData.statusColor,
               }}
             />
 
@@ -468,22 +438,20 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
                   </p>
 
                   <h3 className="mt-1 text-base font-black text-[#6f302b]">
-                    {formatINR(
-                      overAmount
-                    )}{' '}
-                    over your event budget
+                    {formatINR(overAmount)} over your event budget
                   </h3>
 
                   <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-[#8d5d57]">
-                    Your current selections and safety buffer exceed the total budget. EventBudget can reduce flexible spending to help bring the plan back within your limit.
+                    Your current selections and safety buffer
+                    exceed the total budget. EventBudget can
+                    reduce flexible spending to help bring the
+                    plan back within your limit.
                   </p>
                 </div>
               </div>
 
               <button
-                onClick={
-                  onFixBudget
-                }
+                onClick={onFixBudget}
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#211a12] px-6 py-3.5 text-xs font-black uppercase tracking-wide text-[#f4dfb8] shadow-[0_10px_25px_rgba(43,31,18,0.22)] transition-all hover:-translate-y-0.5 hover:bg-black active:translate-y-0 sm:w-auto"
               >
                 <Zap className="h-4 w-4 fill-[#e5c17d] text-[#e5c17d]" />
@@ -512,15 +480,11 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
                   <p className="mt-1.5 text-xs leading-relaxed text-[#71805b]">
                     Your current selections fit within{' '}
                     <strong>
-                      {formatINR(
-                        totalBudget
-                      )}
+                      {formatINR(totalBudget)}
                     </strong>{' '}
                     while keeping{' '}
                     <strong>
-                      {formatINR(
-                        bufferAllocated
-                      )}
+                      {formatINR(bufferAllocated)}
                     </strong>{' '}
                     as a safety buffer.
                   </p>
@@ -529,9 +493,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
               <button
                 type="button"
-                onClick={
-                  triggerConfetti
-                }
+                onClick={triggerConfetti}
                 className="flex items-center gap-2 rounded-xl border border-[#9ba878]/35 bg-white/50 px-4 py-2.5 text-xs font-bold text-[#657348] transition-all hover:bg-white"
               >
                 <Sparkles className="h-4 w-4" />
@@ -547,34 +509,26 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       {showEditor && (
         <InteractiveBudgetEditor
           event={event}
-          onUpdateAllocations={
-            handleUpdateAllocations
-          }
+          onUpdateAllocations={handleUpdateAllocations}
         />
       )}
 
-      {/* CHART */}
+      {/* WHY THIS PLAN */}
 
-      <BudgetDonutChart
-        event={event}
-      />
+      <PlanExplanation event={event} />
 
-      {/* WHAT CAN I GET */}
+      {/* BUDGET CHART */}
+
+      <BudgetDonutChart event={event} />
+
+      {/* SUGGESTED EVENT PLAN */}
 
       <WhatCanIGet
         event={event}
-        onApplyPresetPackage={
-          handleApplyCuratedPackage
-        }
-        onSimulateOverbudgetUpgrade={
-          handleSimulateUpgrade
-        }
-        onFixMyBudget={
-          onFixBudget
-        }
-        isOverBudget={
-          isOverBudget
-        }
+        onApplyPresetPackage={handleApplyCuratedPackage}
+        onSimulateOverbudgetUpgrade={handleSimulateUpgrade}
+        onFixMyBudget={onFixBudget}
+        isOverBudget={isOverBudget}
         overAmount={overAmount}
       />
 
@@ -586,33 +540,21 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
       <CategoryCards
         event={event}
-        onSelectCategory={
-          onSelectCategory
-        }
+        onSelectCategory={onSelectCategory}
       />
 
       {/* MODALS */}
 
       <CanIAddThisModal
-        isOpen={
-          showCanIAddModal
-        }
-        onClose={() =>
-          setShowCanIAddModal(false)
-        }
+        isOpen={showCanIAddModal}
+        onClose={() => setShowCanIAddModal(false)}
         event={event}
-        onAddCustomExpense={
-          handleAddCustomExpense
-        }
+        onAddCustomExpense={handleAddCustomExpense}
       />
 
       <HealthScoreModal
-        isOpen={
-          showHealthModal
-        }
-        onClose={() =>
-          setShowHealthModal(false)
-        }
+        isOpen={showHealthModal}
+        onClose={() => setShowHealthModal(false)}
         event={event}
       />
     </section>
