@@ -33,6 +33,7 @@ import { GuestImpactSimulator } from './GuestImpactSimulator';
 import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
+import { ShareEventPlan } from './ShareEventPlan';
 
 interface BudgetDashboardProps {
   event: EventState;
@@ -219,6 +220,8 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </div>
 
           <div className="flex flex-wrap gap-2">
+            <ShareEventPlan event={event} />
+
             <button
               onClick={() => setShowCanIAddModal(true)}
               className="flex items-center gap-2 rounded-xl border border-[#cbb996]/25 bg-white/5 px-4 py-2.5 text-xs font-bold text-[#efe5d4] transition-all hover:-translate-y-0.5 hover:bg-white/10 active:translate-y-0"
