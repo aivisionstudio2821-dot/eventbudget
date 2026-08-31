@@ -1,4 +1,8 @@
-import { CategoryAllocations, EventType, Priority } from '../types';
+import {
+  CategoryAllocations,
+  EventType,
+  Priority,
+} from '../types';
 
 import {
   FOOD_ITEMS,
@@ -307,6 +311,13 @@ export const autoSelectEventPlan = ({
     }
   }
 
+  /*
+   * For smaller house parties,
+   * prefer a society hall or home
+   * only when it actually fits the
+   * allocated venue budget.
+   */
+
   if (
     eventType === 'House Party' &&
     guestCount <= 120
@@ -326,21 +337,47 @@ export const autoSelectEventPlan = ({
     }
   }
 
-  const selectedVenue =
+  /*
+   * Pick the best affordable venue.
+   *
+   * IMPORTANT:
+   * Never force-select a venue whose
+   * price exceeds the venue allocation.
+   */
+
+  const affordableVenue =
     venueCandidates.sort(
       (a, b) =>
         b.defaultPrice - a.defaultPrice
-    )[0] ||
+    )[0];
+
+  /*
+   * Home is allowed as a fallback only
+   * when its listed cost also fits inside
+   * the venue allocation.
+   */
+
+  const fallbackHome =
     VENUE_TYPES.find(
-      (venue) => venue.id === 'venue_home'
-    ) ||
-    VENUE_TYPES[0];
+      (venue) =>
+        venue.id === 'venue_home' &&
+        venue.defaultPrice <= allocations.venue
+    );
+
+  const selectedVenue =
+    affordableVenue || fallbackHome;
+
+  /*
+   * If nothing is affordable,
+   * leave the venue unselected instead
+   * of inventing an over-budget choice.
+   */
 
   const selectedVenueId =
-    selectedVenue.id;
+    selectedVenue?.id || '';
 
   const customVenuePrice =
-    selectedVenue.defaultPrice;
+    selectedVenue?.defaultPrice || 0;
 
 
   /* =====================================================
@@ -357,8 +394,13 @@ export const autoSelectEventPlan = ({
     number
   > = {};
 
+  /*
+   * If no venue was affordable,
+   * venue spending starts at zero.
+   */
+
   let venueSpent =
-    selectedVenue.defaultPrice;
+    selectedVenue?.defaultPrice || 0;
 
   const preferredAddons = [
     'addon_cleaning',
