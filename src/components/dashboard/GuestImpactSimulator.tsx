@@ -36,11 +36,11 @@ export const GuestImpactSimulator: React.FC<
     const currentAllocations = event.allocations;
 
     const simulatedAllocations = calculateSmartAllocations(
-      event.totalBudget,
-      safeGuests,
-      event.eventType,
-      event.priority
-    );
+  event.eventType,
+  event.totalBudget,
+  safeGuests,
+  event.priority
+);
 
     const currentFood = currentAllocations.food || 0;
     const simulatedFood = simulatedAllocations.food || 0;
