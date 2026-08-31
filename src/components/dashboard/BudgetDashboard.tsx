@@ -18,6 +18,7 @@ import {
   EventState,
   CategoryKey,
   CategoryAllocations,
+  Priority,
 } from '../../types';
 
 import { formatINR } from '../../utils/currencyFormatter';
@@ -29,6 +30,7 @@ import { CategoryCards } from './CategoryCards';
 import { InteractiveBudgetEditor } from './InteractiveBudgetEditor';
 import { WhatCanIGet } from './WhatCanIGet';
 import { PlanExplanation } from './PlanExplanation';
+import { PlanComparison } from './PlanComparison';
 import { GuestImpactSimulator } from './GuestImpactSimulator';
 import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
@@ -168,6 +170,31 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
     });
   };
 
+  // --------------------------------------------------
+  // PLAN COMPARISON
+  // --------------------------------------------------
+
+  const handleApplyComparisonPlan = (
+    priority: Priority,
+    allocations: CategoryAllocations
+  ) => {
+    const updated: EventState = {
+      ...event,
+      priority,
+      allocations,
+      isCustomAllocation: false,
+    };
+
+    onUpdateEvent(updated);
+
+    confetti({
+      particleCount: 60,
+      spread: 65,
+      origin: { y: 0.65 },
+      colors: ['#b58a47', '#ead7ad', '#f5efe4', '#687548'],
+    });
+  };
+
   return (
     <section
       id="dashboard-section"
@@ -228,7 +255,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
               className="flex items-center gap-2 rounded-xl border border-[#cbb996]/25 bg-white/5 px-4 py-2.5 text-xs font-bold text-[#efe5d4] transition-all hover:-translate-y-0.5 hover:bg-white/10 active:translate-y-0"
             >
               <HelpCircle className="h-4 w-4 text-[#d9ba7d]" />
-
               <span>Can I Add This?</span>
             </button>
 
@@ -251,8 +277,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       {/* KPI CARDS */}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
-        {/* TOTAL BUDGET */}
-
         <div className="rounded-2xl border border-[#ddd0bb] bg-[#fffaf1] p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] sm:p-5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#877966]">
@@ -271,8 +295,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </p>
         </div>
 
-        {/* PLANNED */}
-
         <div className="rounded-2xl border border-[#ddd0bb] bg-[#fffaf1] p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] sm:p-5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#877966]">
@@ -290,8 +312,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
             Selected event items
           </p>
         </div>
-
-        {/* REMAINING */}
 
         <div
           className={`rounded-2xl border p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] transition-all sm:p-5 ${
@@ -331,8 +351,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </p>
         </div>
 
-        {/* BUFFER */}
-
         <div className="rounded-2xl border border-[#ddd0bb] bg-[#fffaf1] p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] sm:p-5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#877966]">
@@ -355,8 +373,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </p>
         </div>
 
-        {/* COST / GUEST */}
-
         <div className="rounded-2xl border border-[#ddd0bb] bg-[#fffaf1] p-4 shadow-[0_8px_24px_rgba(64,47,28,0.06)] sm:p-5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#877966]">
@@ -374,8 +390,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
             For {guestCount} guests
           </p>
         </div>
-
-        {/* HEALTH */}
 
         <button
           type="button"
@@ -460,7 +474,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#211a12] px-6 py-3.5 text-xs font-black uppercase tracking-wide text-[#f4dfb8] shadow-[0_10px_25px_rgba(43,31,18,0.22)] transition-all hover:-translate-y-0.5 hover:bg-black active:translate-y-0 sm:w-auto"
               >
                 <Zap className="h-4 w-4 fill-[#e5c17d] text-[#e5c17d]" />
-
                 FIX MY BUDGET
               </button>
             </div>
@@ -528,6 +541,13 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       {/* WHY THIS PLAN */}
 
       <PlanExplanation event={event} />
+
+      {/* PLAN A VS PLAN B */}
+
+      <PlanComparison
+        event={event}
+        onApplyPlan={handleApplyComparisonPlan}
+      />
 
       {/* GUEST IMPACT SIMULATOR */}
 
