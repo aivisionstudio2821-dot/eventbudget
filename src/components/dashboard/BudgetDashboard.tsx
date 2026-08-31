@@ -34,6 +34,7 @@ import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
 import { ShareEventPlan } from './ShareEventPlan';
+import { BudgetRescue } from './BudgetRescue';
 
 interface BudgetDashboardProps {
   event: EventState;
@@ -507,6 +508,13 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </div>
         )}
       </div>
+
+      {/* BUDGET RESCUE */}
+
+      <BudgetRescue
+        event={event}
+        onFixBudget={onFixBudget}
+      />
 
       {/* BUDGET EDITOR */}
 
