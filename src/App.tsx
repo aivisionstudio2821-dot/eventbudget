@@ -431,12 +431,10 @@ export const App: React.FC = () => {
     const plannedSpend =
       calculateTotalPlanned(event);
 
-    let remainingOver =
-      Math.max(
-        0,
-        plannedSpend -
-          event.totalBudget
-      );
+    let remainingOver = Math.max(
+      0,
+      plannedSpend - event.totalBudget
+    );
 
     if (remainingOver <= 0) {
       showToast(
@@ -450,53 +448,302 @@ export const App: React.FC = () => {
 
     const {
       newAllocations,
-    } =
-      rebalanceEventAllocations(
-        event,
-        remainingOver
-      );
+    } = rebalanceEventAllocations(
+      event,
+      remainingOver
+    );
+
+    /*
+     * Work on local copies first.
+     */
+    const customFoodPrices = {
+      ...(event.customFoodPrices || {}),
+    };
 
     const customPhotographyPrices = {
-      ...(
-        event.customPhotographyPrices ||
-        {}
-      ),
+      ...(event.customPhotographyPrices || {}),
     };
 
     const customDecorPrices = {
-      ...(
-        event.customDecorPrices ||
-        {}
-      ),
+      ...(event.customDecorPrices || {}),
     };
 
     const customEntertainmentPrices = {
-      ...(
-        event.customEntertainmentPrices ||
-        {}
-      ),
+      ...(event.customEntertainmentPrices || {}),
     };
 
     const customVenueAddonPrices = {
-      ...(
-        event.customVenueAddonPrices ||
-        {}
-      ),
+      ...(event.customVenueAddonPrices || {}),
     };
+
+    let selectedFoodPackageId =
+      event.selectedFoodPackageId;
 
     let customVenuePrice =
       event.customVenuePrice;
 
     /*
+     * =====================================================
+     * FOOD
+     *
+     * Important:
+     * When a food package is active, calculateFoodTotal()
+     * uses the package price instead of individual item
+     * prices.
+     *
+     * Therefore Fix My Budget first converts the package
+     * into manual item pricing while preserving the exact
+     * current package total. Only then does it reduce food.
+     *
+     * Applied vendor quotes are intentionally protected.
+     * =====================================================
+     */
+
+    const hasAppliedFoodQuote =
+      Boolean(
+        event.appliedQuoteIds?.food
+      );
+
+    const selectedFoodIds =
+      Object.entries(
+        event.selectedFoodItems || {}
+      )
+        .filter(([, selected]) => selected)
+        .map(([id]) => id);
+
+    if (
+      remainingOver > 0 &&
+      !hasAppliedFoodQuote &&
+      selectedFoodIds.length > 0
+    ) {
+      /*
+       * PACKAGE -> MANUAL CONVERSION
+       *
+       * Get the current food total BEFORE clearing
+       * selectedFoodPackageId. At this moment this is
+       * exactly the package total.
+       */
+      if (selectedFoodPackageId) {
+        const packageFoodTotal =
+          calculateCategoryTotals(
+            event
+          ).food;
+
+        const guestCount =
+          Math.max(
+            1,
+            event.guestCount
+          );
+
+        const packagePerPerson =
+          packageFoodTotal /
+          guestCount;
+
+        /*
+         * Determine current item weights.
+         *
+         * The weights preserve the relative value of
+         * each selected item while forcing their new
+         * combined per-person total to equal the
+         * package's real per-person price.
+         */
+        const currentItemPrices =
+          selectedFoodIds.map((id) => {
+            const isolatedFoodState: EventState = {
+              ...event,
+
+              /*
+               * Clear package so the calculator uses
+               * manual item pricing.
+               */
+              selectedFoodPackageId:
+                undefined,
+
+              selectedFoodItems: {
+                [id]: true,
+              },
+
+              customFoodPrices: {
+                ...(event.customFoodPrices || {}),
+              },
+
+              /*
+               * Protect against an applied food quote
+               * affecting the isolated calculation.
+               */
+              appliedQuoteIds: {
+                ...event.appliedQuoteIds,
+                food: undefined,
+              },
+            };
+
+            const isolatedTotal =
+              calculateCategoryTotals(
+                isolatedFoodState
+              ).food;
+
+            return {
+              id,
+              perPerson:
+                isolatedTotal /
+                guestCount,
+            };
+          });
+
+        const rawCombinedPerPerson =
+          currentItemPrices.reduce(
+            (sum, item) =>
+              sum +
+              Math.max(
+                0,
+                item.perPerson
+              ),
+            0
+          );
+
+        /*
+         * If the selected items have valid prices,
+         * distribute the package price proportionally.
+         *
+         * Otherwise distribute it equally.
+         */
+        if (rawCombinedPerPerson > 0) {
+          currentItemPrices.forEach(
+            (item) => {
+              const share =
+                Math.max(
+                  0,
+                  item.perPerson
+                ) /
+                rawCombinedPerPerson;
+
+              customFoodPrices[item.id] =
+                packagePerPerson *
+                share;
+            }
+          );
+        } else {
+          const equalPrice =
+            packagePerPerson /
+            selectedFoodIds.length;
+
+          selectedFoodIds.forEach(
+            (id) => {
+              customFoodPrices[id] =
+                equalPrice;
+            }
+          );
+        }
+
+        /*
+         * Package is now represented by manual item
+         * prices with the SAME starting total.
+         */
+        selectedFoodPackageId =
+          undefined;
+      }
+
+      /*
+       * Reduce food prices.
+       *
+       * Food item prices are per-person, so reducing
+       * ₹1 from an item's price saves ₹guestCount from
+       * the total event cost.
+       */
+      const guestCount =
+        Math.max(
+          1,
+          event.guestCount
+        );
+
+      for (
+        const id of selectedFoodIds
+      ) {
+        if (remainingOver <= 0) {
+          break;
+        }
+
+        /*
+         * Determine current per-person price after
+         * package conversion (or existing manual price).
+         */
+        let currentPerPerson =
+          customFoodPrices[id];
+
+        if (
+          currentPerPerson ===
+            undefined
+        ) {
+          const isolatedFoodState: EventState = {
+            ...event,
+
+            selectedFoodPackageId:
+              undefined,
+
+            selectedFoodItems: {
+              [id]: true,
+            },
+
+            customFoodPrices: {
+              ...customFoodPrices,
+            },
+
+            appliedQuoteIds: {
+              ...event.appliedQuoteIds,
+              food: undefined,
+            },
+          };
+
+          currentPerPerson =
+            calculateCategoryTotals(
+              isolatedFoodState
+            ).food /
+            guestCount;
+        }
+
+        currentPerPerson =
+          Math.max(
+            0,
+            currentPerPerson || 0
+          );
+
+        const currentItemTotal =
+          currentPerPerson *
+          guestCount;
+
+        const reduction =
+          Math.min(
+            currentItemTotal,
+            remainingOver
+          );
+
+        const perPersonReduction =
+          reduction /
+          guestCount;
+
+        customFoodPrices[id] =
+          Math.max(
+            0,
+            currentPerPerson -
+              perPersonReduction
+          );
+
+        remainingOver -=
+          reduction;
+      }
+    }
+
+    /*
+     * =====================================================
      * PHOTOGRAPHY
+     * =====================================================
      */
     for (
       const [
         id,
         selected,
       ] of Object.entries(
-        event.selectedPhotography ||
-          {}
+        event.selectedPhotography || {}
       )
     ) {
       if (
@@ -506,19 +753,16 @@ export const App: React.FC = () => {
         continue;
       }
 
-      const singleItemState: EventState =
-        {
-          ...event,
+      const singleItemState: EventState = {
+        ...event,
 
-          selectedPhotography: {
-            [id]: true,
-          },
-        };
+        selectedPhotography: {
+          [id]: true,
+        },
+      };
 
       const currentPrice =
-        customPhotographyPrices[
-          id
-        ] ??
+        customPhotographyPrices[id] ??
         calculateCategoryTotals(
           singleItemState
         ).photography;
@@ -529,28 +773,28 @@ export const App: React.FC = () => {
           remainingOver
         );
 
-      customPhotographyPrices[
-        id
-      ] = Math.max(
-        0,
-        currentPrice -
-          reduction
-      );
+      customPhotographyPrices[id] =
+        Math.max(
+          0,
+          currentPrice -
+            reduction
+        );
 
       remainingOver -=
         reduction;
     }
 
     /*
+     * =====================================================
      * DECORATION
+     * =====================================================
      */
     for (
       const [
         id,
         selected,
       ] of Object.entries(
-        event.selectedDecorItems ||
-          {}
+        event.selectedDecorItems || {}
       )
     ) {
       if (
@@ -560,14 +804,13 @@ export const App: React.FC = () => {
         continue;
       }
 
-      const singleItemState: EventState =
-        {
-          ...event,
+      const singleItemState: EventState = {
+        ...event,
 
-          selectedDecorItems: {
-            [id]: true,
-          },
-        };
+        selectedDecorItems: {
+          [id]: true,
+        },
+      };
 
       const currentPrice =
         customDecorPrices[id] ??
@@ -581,28 +824,28 @@ export const App: React.FC = () => {
           remainingOver
         );
 
-      customDecorPrices[
-        id
-      ] = Math.max(
-        0,
-        currentPrice -
-          reduction
-      );
+      customDecorPrices[id] =
+        Math.max(
+          0,
+          currentPrice -
+            reduction
+        );
 
       remainingOver -=
         reduction;
     }
 
     /*
+     * =====================================================
      * DJ / ENTERTAINMENT
+     * =====================================================
      */
     for (
       const [
         id,
         selected,
       ] of Object.entries(
-        event.selectedEntertainment ||
-          {}
+        event.selectedEntertainment || {}
       )
     ) {
       if (
@@ -612,19 +855,16 @@ export const App: React.FC = () => {
         continue;
       }
 
-      const singleItemState: EventState =
-        {
-          ...event,
+      const singleItemState: EventState = {
+        ...event,
 
-          selectedEntertainment: {
-            [id]: true,
-          },
-        };
+        selectedEntertainment: {
+          [id]: true,
+        },
+      };
 
       const currentPrice =
-        customEntertainmentPrices[
-          id
-        ] ??
+        customEntertainmentPrices[id] ??
         calculateCategoryTotals(
           singleItemState
         ).dj;
@@ -635,28 +875,32 @@ export const App: React.FC = () => {
           remainingOver
         );
 
-      customEntertainmentPrices[
-        id
-      ] = Math.max(
-        0,
-        currentPrice -
-          reduction
-      );
+      customEntertainmentPrices[id] =
+        Math.max(
+          0,
+          currentPrice -
+            reduction
+        );
 
       remainingOver -=
         reduction;
     }
 
     /*
-     * VENUE ADDONS
+     * =====================================================
+     * VENUE ADD-ONS
+     *
+     * selectedVenueId is deliberately cleared in the
+     * isolated calculation so the venue base price is
+     * NOT accidentally counted as part of an add-on.
+     * =====================================================
      */
     for (
       const [
         id,
         selected,
       ] of Object.entries(
-        event.selectedVenueAddons ||
-          {}
+        event.selectedVenueAddons || {}
       )
     ) {
       if (
@@ -666,19 +910,29 @@ export const App: React.FC = () => {
         continue;
       }
 
-      const singleItemState: EventState =
-        {
-          ...event,
+      const singleItemState: EventState = {
+        ...event,
 
-          selectedVenueAddons: {
-            [id]: true,
-          },
-        };
+        selectedVenueId: '',
+
+        customVenuePrice: 0,
+
+        selectedVenueAddons: {
+          [id]: true,
+        },
+
+        /*
+         * Protect isolated calculation from a
+         * vendor venue quote.
+         */
+        appliedQuoteIds: {
+          ...event.appliedQuoteIds,
+          venue: undefined,
+        },
+      };
 
       const currentPrice =
-        customVenueAddonPrices[
-          id
-        ] ??
+        customVenueAddonPrices[id] ??
         calculateCategoryTotals(
           singleItemState
         ).venue;
@@ -689,30 +943,39 @@ export const App: React.FC = () => {
           remainingOver
         );
 
-      customVenueAddonPrices[
-        id
-      ] = Math.max(
-        0,
-        currentPrice -
-          reduction
-      );
+      customVenueAddonPrices[id] =
+        Math.max(
+          0,
+          currentPrice -
+            reduction
+        );
 
       remainingOver -=
         reduction;
     }
 
     /*
+     * =====================================================
      * VENUE BASE PRICE
+     *
+     * Add-ons are removed from this isolated state so
+     * only the venue base price is measured.
+     * =====================================================
      */
     if (
       remainingOver > 0 &&
       event.selectedVenueId
     ) {
-      const venueOnlyState: EventState =
-        {
-          ...event,
-          selectedVenueAddons: {},
-        };
+      const venueOnlyState: EventState = {
+        ...event,
+
+        selectedVenueAddons: {},
+
+        appliedQuoteIds: {
+          ...event.appliedQuoteIds,
+          venue: undefined,
+        },
+      };
 
       const currentVenuePrice =
         customVenuePrice ??
@@ -738,7 +1001,9 @@ export const App: React.FC = () => {
     }
 
     /*
+     * =====================================================
      * UPDATED EVENT
+     * =====================================================
      */
     const updated: EventState = {
       ...event,
@@ -746,9 +1011,17 @@ export const App: React.FC = () => {
       allocations:
         newAllocations,
 
+      /*
+       * Food package may have been safely converted
+       * into equivalent manual item pricing.
+       */
+      selectedFoodPackageId,
+      customFoodPrices,
+
       customPhotographyPrices,
       customDecorPrices,
       customEntertainmentPrices,
+
       customVenuePrice,
       customVenueAddonPrices,
     };
