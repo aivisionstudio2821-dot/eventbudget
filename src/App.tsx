@@ -54,9 +54,6 @@ import { formatINR } from './utils/currencyFormatter';
 const STORAGE_KEY = 'eventbudget_active_plan_v1';
 
 export const App: React.FC = () => {
-  /*
-   * LOAD EVENT
-   */
   const [event, setEvent] = useState<EventState | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -92,9 +89,6 @@ export const App: React.FC = () => {
   const [toasts, setToasts] =
     useState<ToastMessage[]>([]);
 
-  /*
-   * TOAST
-   */
   const showToast = (
     type: 'success' | 'warning' | 'info',
     title: string,
@@ -127,9 +121,6 @@ export const App: React.FC = () => {
     );
   };
 
-  /*
-   * AUTO SAVE TO LOCAL STORAGE
-   */
   useEffect(() => {
     if (!event) return;
 
@@ -146,9 +137,6 @@ export const App: React.FC = () => {
     }
   }, [event]);
 
-  /*
-   * LOAD DEMO EVENT
-   */
   const handleLoadDemo = () => {
     const demo = createDemoEvent();
 
@@ -187,9 +175,6 @@ export const App: React.FC = () => {
     }, 150);
   };
 
-  /*
-   * CREATE EVENT
-   */
   const handleCreateEvent = (
     newEvent: EventState
   ) => {
@@ -228,9 +213,6 @@ export const App: React.FC = () => {
     }, 200);
   };
 
-  /*
-   * SAVE EVENT
-   */
   const handleSaveEvent = () => {
     if (!event) return;
 
@@ -251,9 +233,6 @@ export const App: React.FC = () => {
     );
   };
 
-  /*
-   * RESET EVENT
-   */
   const handleResetEvent = () => {
     localStorage.removeItem(STORAGE_KEY);
 
@@ -268,9 +247,6 @@ export const App: React.FC = () => {
     );
   };
 
-  /*
-   * UPDATE EVENT
-   */
   const handleUpdateEvent = (
     updated: EventState
   ) => {
@@ -278,9 +254,6 @@ export const App: React.FC = () => {
     setHasSavedChanges(false);
   };
 
-  /*
-   * SELECT CATEGORY
-   */
   const handleSelectCategory = (
     key: CategoryKey
   ) => {
@@ -300,9 +273,6 @@ export const App: React.FC = () => {
     }
   };
 
-  /*
-   * SAVE VENDOR QUOTE
-   */
   const handleSaveQuote = (
     quote: VendorQuote
   ) => {
@@ -331,9 +301,6 @@ export const App: React.FC = () => {
     );
   };
 
-  /*
-   * APPLY VENDOR QUOTE
-   */
   const handleApplyQuote = (
     quote: VendorQuote
   ) => {
@@ -380,9 +347,6 @@ export const App: React.FC = () => {
     }
   };
 
-  /*
-   * REMOVE QUOTE
-   */
   const handleRemoveQuote = (
     quoteId: string
   ) => {
@@ -422,18 +386,21 @@ export const App: React.FC = () => {
     );
   };
 
-  /*
-   * FIX MY BUDGET
-   */
   const handleFixMyBudget = () => {
     if (!event) return;
 
     const plannedSpend =
       calculateTotalPlanned(event);
 
+    const bufferAllocated =
+      event.allocations.buffer || 0;
+
+    const totalCommitted =
+      plannedSpend + bufferAllocated;
+
     let remainingOver = Math.max(
       0,
-      plannedSpend - event.totalBudget
+      totalCommitted - event.totalBudget
     );
 
     if (remainingOver <= 0) {
@@ -453,9 +420,6 @@ export const App: React.FC = () => {
       remainingOver
     );
 
-    /*
-     * Work on local copies first.
-     */
     const customFoodPrices = {
       ...(event.customFoodPrices || {}),
     };
@@ -482,23 +446,6 @@ export const App: React.FC = () => {
     let customVenuePrice =
       event.customVenuePrice;
 
-    /*
-     * =====================================================
-     * FOOD
-     *
-     * Important:
-     * When a food package is active, calculateFoodTotal()
-     * uses the package price instead of individual item
-     * prices.
-     *
-     * Therefore Fix My Budget first converts the package
-     * into manual item pricing while preserving the exact
-     * current package total. Only then does it reduce food.
-     *
-     * Applied vendor quotes are intentionally protected.
-     * =====================================================
-     */
-
     const hasAppliedFoodQuote =
       Boolean(
         event.appliedQuoteIds?.food
@@ -516,13 +463,6 @@ export const App: React.FC = () => {
       !hasAppliedFoodQuote &&
       selectedFoodIds.length > 0
     ) {
-      /*
-       * PACKAGE -> MANUAL CONVERSION
-       *
-       * Get the current food total BEFORE clearing
-       * selectedFoodPackageId. At this moment this is
-       * exactly the package total.
-       */
       if (selectedFoodPackageId) {
         const packageFoodTotal =
           calculateCategoryTotals(
@@ -539,23 +479,11 @@ export const App: React.FC = () => {
           packageFoodTotal /
           guestCount;
 
-        /*
-         * Determine current item weights.
-         *
-         * The weights preserve the relative value of
-         * each selected item while forcing their new
-         * combined per-person total to equal the
-         * package's real per-person price.
-         */
         const currentItemPrices =
           selectedFoodIds.map((id) => {
             const isolatedFoodState: EventState = {
               ...event,
 
-              /*
-               * Clear package so the calculator uses
-               * manual item pricing.
-               */
               selectedFoodPackageId:
                 undefined,
 
@@ -567,10 +495,6 @@ export const App: React.FC = () => {
                 ...(event.customFoodPrices || {}),
               },
 
-              /*
-               * Protect against an applied food quote
-               * affecting the isolated calculation.
-               */
               appliedQuoteIds: {
                 ...event.appliedQuoteIds,
                 food: undefined,
@@ -601,12 +525,6 @@ export const App: React.FC = () => {
             0
           );
 
-        /*
-         * If the selected items have valid prices,
-         * distribute the package price proportionally.
-         *
-         * Otherwise distribute it equally.
-         */
         if (rawCombinedPerPerson > 0) {
           currentItemPrices.forEach(
             (item) => {
@@ -635,21 +553,10 @@ export const App: React.FC = () => {
           );
         }
 
-        /*
-         * Package is now represented by manual item
-         * prices with the SAME starting total.
-         */
         selectedFoodPackageId =
           undefined;
       }
 
-      /*
-       * Reduce food prices.
-       *
-       * Food item prices are per-person, so reducing
-       * ₹1 from an item's price saves ₹guestCount from
-       * the total event cost.
-       */
       const guestCount =
         Math.max(
           1,
@@ -663,10 +570,6 @@ export const App: React.FC = () => {
           break;
         }
 
-        /*
-         * Determine current per-person price after
-         * package conversion (or existing manual price).
-         */
         let currentPerPerson =
           customFoodPrices[id];
 
@@ -733,11 +636,6 @@ export const App: React.FC = () => {
       }
     }
 
-    /*
-     * =====================================================
-     * PHOTOGRAPHY
-     * =====================================================
-     */
     for (
       const [
         id,
@@ -784,11 +682,6 @@ export const App: React.FC = () => {
         reduction;
     }
 
-    /*
-     * =====================================================
-     * DECORATION
-     * =====================================================
-     */
     for (
       const [
         id,
@@ -835,11 +728,6 @@ export const App: React.FC = () => {
         reduction;
     }
 
-    /*
-     * =====================================================
-     * DJ / ENTERTAINMENT
-     * =====================================================
-     */
     for (
       const [
         id,
@@ -886,15 +774,6 @@ export const App: React.FC = () => {
         reduction;
     }
 
-    /*
-     * =====================================================
-     * VENUE ADD-ONS
-     *
-     * selectedVenueId is deliberately cleared in the
-     * isolated calculation so the venue base price is
-     * NOT accidentally counted as part of an add-on.
-     * =====================================================
-     */
     for (
       const [
         id,
@@ -914,17 +793,12 @@ export const App: React.FC = () => {
         ...event,
 
         selectedVenueId: '',
-
         customVenuePrice: 0,
 
         selectedVenueAddons: {
           [id]: true,
         },
 
-        /*
-         * Protect isolated calculation from a
-         * vendor venue quote.
-         */
         appliedQuoteIds: {
           ...event.appliedQuoteIds,
           venue: undefined,
@@ -954,14 +828,6 @@ export const App: React.FC = () => {
         reduction;
     }
 
-    /*
-     * =====================================================
-     * VENUE BASE PRICE
-     *
-     * Add-ons are removed from this isolated state so
-     * only the venue base price is measured.
-     * =====================================================
-     */
     if (
       remainingOver > 0 &&
       event.selectedVenueId
@@ -1000,21 +866,12 @@ export const App: React.FC = () => {
         reduction;
     }
 
-    /*
-     * =====================================================
-     * UPDATED EVENT
-     * =====================================================
-     */
     const updated: EventState = {
       ...event,
 
       allocations:
         newAllocations,
 
-      /*
-       * Food package may have been safely converted
-       * into equivalent manual item pricing.
-       */
       selectedFoodPackageId,
       customFoodPrices,
 
@@ -1031,22 +888,25 @@ export const App: React.FC = () => {
         updated
       );
 
+    const finalBuffer =
+      updated.allocations.buffer || 0;
+
+    const finalCommitted =
+      finalSpend + finalBuffer;
+
     const actualSaved =
       Math.max(
         0,
-        plannedSpend -
-          finalSpend
+        totalCommitted -
+          finalCommitted
       );
 
     handleUpdateEvent(
       updated
     );
 
-    /*
-     * SUCCESS
-     */
     if (
-      finalSpend <=
+      finalCommitted <=
       event.totalBudget
     ) {
       showToast(
@@ -1068,7 +928,7 @@ export const App: React.FC = () => {
       });
     } else {
       const stillOver =
-        finalSpend -
+        finalCommitted -
         event.totalBudget;
 
       showToast(
@@ -1090,7 +950,6 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-transparent text-[#211b15] flex flex-col font-sans selection:bg-[#d8b97b] selection:text-[#211b15]">
 
-      {/* TOASTS */}
       <ToastContainer
         toasts={toasts}
         onDismiss={
@@ -1098,7 +957,6 @@ export const App: React.FC = () => {
         }
       />
 
-      {/* NAVBAR */}
       <Navbar
         event={event}
 
@@ -1133,10 +991,8 @@ export const App: React.FC = () => {
         }
       />
 
-      {/* MAIN WEBSITE */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
 
-        {/* HERO */}
         <HeroSection
           onOpenCreateModal={() =>
             setIsCreateModalOpen(
@@ -1167,11 +1023,8 @@ export const App: React.FC = () => {
           }}
         />
 
-        {/* ACTIVE EVENT */}
         {event && (
           <>
-
-            {/* BUDGET DASHBOARD */}
             <BudgetDashboard
               event={event}
 
@@ -1182,18 +1035,19 @@ export const App: React.FC = () => {
               onSelectCategory={
                 handleSelectCategory
               }
+
+              onFixBudget={
+                handleFixMyBudget
+              }
             />
 
-            {/* CATEGORY PLANNERS */}
             <section
               id="planners-section"
               className="py-8 sm:py-12 space-y-6"
             >
-
               <div className="flex items-center justify-between flex-wrap gap-4 pb-2">
 
                 <div>
-
                   <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-400 mb-1">
 
                     <Sparkles className="w-3.5 h-3.5" />
@@ -1201,18 +1055,13 @@ export const App: React.FC = () => {
                     <span>
                       Granular Item Selection
                     </span>
-
                   </div>
 
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading">
-
                     Explore What You Can Get Inside Each Category
-
                   </h2>
-
                 </div>
 
-                {/* CATEGORY BUTTONS */}
                 <div className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-slate-900 border border-slate-800">
 
                   {[
@@ -1312,7 +1161,6 @@ export const App: React.FC = () => {
 
               </div>
 
-              {/* ACTIVE PLANNER */}
               <div className="pt-2 animate-in fade-in duration-200">
 
                 {activePlannerTab ===
@@ -1397,7 +1245,6 @@ export const App: React.FC = () => {
 
             </section>
 
-            {/* AHMEDABAD VENDORS */}
             <VendorMarketplace
               event={event}
 
@@ -1423,10 +1270,8 @@ export const App: React.FC = () => {
 
       </main>
 
-      {/* FOOTER */}
       <Footer />
 
-      {/* CREATE EVENT */}
       <CreateEventModal
         isOpen={
           isCreateModalOpen
@@ -1447,10 +1292,8 @@ export const App: React.FC = () => {
         }
       />
 
-      {/* EVENT VISUALIZER */}
       <EventPreview />
 
-      {/* INTERACTIVE CHALLENGE MODE */}
       <ChallengeMode
         budget={
           event?.totalBudget ??
@@ -1469,7 +1312,6 @@ export const App: React.FC = () => {
         }
       />
 
-      {/* TEAM */}
       <TeamSection />
 
     </div>
