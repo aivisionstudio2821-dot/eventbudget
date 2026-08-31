@@ -29,6 +29,7 @@ import { CategoryCards } from './CategoryCards';
 import { InteractiveBudgetEditor } from './InteractiveBudgetEditor';
 import { WhatCanIGet } from './WhatCanIGet';
 import { PlanExplanation } from './PlanExplanation';
+import { GuestImpactSimulator } from './GuestImpactSimulator';
 import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
@@ -516,6 +517,10 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       {/* WHY THIS PLAN */}
 
       <PlanExplanation event={event} />
+
+      {/* GUEST IMPACT SIMULATOR */}
+
+      <GuestImpactSimulator event={event} />
 
       {/* BUDGET CHART */}
 
