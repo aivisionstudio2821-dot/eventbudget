@@ -22,10 +22,7 @@ import {
 
 import { formatINR } from '../../utils/currencyFormatter';
 
-import {
-  calculateTotalPlanned,
-  rebalanceEventAllocations,
-} from '../../utils/budgetCalculations';
+import { calculateTotalPlanned } from '../../utils/budgetCalculations';
 
 import { calculateEventHealthScore } from '../../utils/eventScoring';
 
@@ -36,25 +33,18 @@ import { WhatCanIGet } from './WhatCanIGet';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
 
-import {
-  FOOD_ITEMS,
-  DECOR_ITEMS,
-  ENTERTAINMENT_ITEMS,
-  PHOTOGRAPHY_ITEMS,
-  VENUE_TYPES,
-  VENUE_ADDONS,
-} from '../../data/initialData';
-
 interface BudgetDashboardProps {
   event: EventState;
   onUpdateEvent: (updated: EventState) => void;
   onSelectCategory: (key: CategoryKey) => void;
+  onFixBudget: () => void;
 }
 
 export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
   event,
   onUpdateEvent,
   onSelectCategory,
+  onFixBudget,
 }) => {
   const [showCanIAddModal, setShowCanIAddModal] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
@@ -91,233 +81,6 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
         '#2c2419',
       ],
     });
-  };
-
-  // --------------------------------------------------
-  // FIX MY BUDGET
-  // --------------------------------------------------
-
-  const handleFixMyBudget = () => {
-    if (overAmount <= 0) return;
-
-    const { newAllocations } =
-      rebalanceEventAllocations(
-        event,
-        overAmount
-      );
-
-    let updated: EventState = {
-      ...event,
-
-      allocations: newAllocations,
-
-      customFoodPrices: {
-        ...event.customFoodPrices,
-      },
-
-      customDecorPrices: {
-        ...event.customDecorPrices,
-      },
-
-      customEntertainmentPrices: {
-        ...event.customEntertainmentPrices,
-      },
-
-      customPhotographyPrices: {
-        ...event.customPhotographyPrices,
-      },
-
-      customVenueAddonPrices: {
-        ...event.customVenueAddonPrices,
-      },
-
-      miscItems: (event.miscItems || []).map(
-        item => ({
-          ...item,
-        })
-      ),
-    };
-
-    let remaining =
-      calculateTotalPlanned(updated) +
-      (updated.allocations.buffer || 0) -
-      totalBudget;
-
-    const reduceItems = (
-      selected: Record<string, boolean>,
-      prices: Record<string, number>,
-      items: Array<{
-        id: string;
-        defaultPrice: number;
-      }>
-    ) => {
-      for (
-        const [id, isSelected] of Object.entries(
-          selected || {}
-        )
-      ) {
-        if (
-          !isSelected ||
-          remaining <= 0
-        ) {
-          continue;
-        }
-
-        const item = items.find(
-          x => x.id === id
-        );
-
-        const currentPrice =
-          prices[id] !== undefined
-            ? prices[id]
-            : item?.defaultPrice || 0;
-
-        const reduction = Math.min(
-          currentPrice,
-          remaining
-        );
-
-        prices[id] =
-          currentPrice - reduction;
-
-        remaining -= reduction;
-      }
-    };
-
-    // Miscellaneous expenses first
-    for (
-      const item of updated.miscItems || []
-    ) {
-      if (remaining <= 0) break;
-
-      if (
-        item.selected === false ||
-        item.price <= 0
-      ) {
-        continue;
-      }
-
-      const reduction = Math.min(
-        item.price,
-        remaining
-      );
-
-      item.price -= reduction;
-      remaining -= reduction;
-    }
-
-    // Flexible categories
-    reduceItems(
-      updated.selectedPhotography,
-      updated.customPhotographyPrices,
-      PHOTOGRAPHY_ITEMS
-    );
-
-    reduceItems(
-      updated.selectedDecorItems,
-      updated.customDecorPrices,
-      DECOR_ITEMS
-    );
-
-    reduceItems(
-      updated.selectedEntertainment,
-      updated.customEntertainmentPrices,
-      ENTERTAINMENT_ITEMS
-    );
-
-    // Venue add-ons
-    reduceItems(
-      updated.selectedVenueAddons,
-      updated.customVenueAddonPrices,
-      VENUE_ADDONS
-    );
-
-    // Venue itself
-    if (
-      remaining > 0 &&
-      updated.selectedVenueId
-    ) {
-      const venue = VENUE_TYPES.find(
-        v =>
-          v.id === updated.selectedVenueId
-      );
-
-      const currentVenuePrice =
-        updated.customVenuePrice !== undefined
-          ? updated.customVenuePrice
-          : venue?.defaultPrice || 0;
-
-      const reduction = Math.min(
-        currentVenuePrice,
-        remaining
-      );
-
-      updated.customVenuePrice =
-        currentVenuePrice - reduction;
-
-      remaining -= reduction;
-    }
-
-    // Food reduced last
-    if (remaining > 0) {
-      const guests = Math.max(
-        1,
-        updated.guestCount || 1
-      );
-
-      for (
-        const [id, isSelected] of Object.entries(
-          updated.selectedFoodItems || {}
-        )
-      ) {
-        if (
-          !isSelected ||
-          remaining <= 0
-        ) {
-          continue;
-        }
-
-        const item = FOOD_ITEMS.find(
-          x => x.id === id
-        );
-
-        const perGuest =
-          updated.customFoodPrices[id] !==
-          undefined
-            ? updated.customFoodPrices[id]
-            : item?.defaultPrice || 0;
-
-        const totalItemCost =
-          perGuest * guests;
-
-        const reduction = Math.min(
-          totalItemCost,
-          remaining
-        );
-
-        updated.customFoodPrices[id] =
-          Math.max(
-            0,
-            perGuest -
-              reduction / guests
-          );
-
-        remaining -= reduction;
-      }
-    }
-
-    onUpdateEvent(updated);
-
-    const finalCommitted =
-      calculateTotalPlanned(updated) +
-      (updated.allocations.buffer || 0);
-
-    if (
-      finalCommitted <=
-      totalBudget + 1
-    ) {
-      triggerConfetti();
-    }
   };
 
   // --------------------------------------------------
@@ -718,7 +481,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
 
               <button
                 onClick={
-                  handleFixMyBudget
+                  onFixBudget
                 }
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#211a12] px-6 py-3.5 text-xs font-black uppercase tracking-wide text-[#f4dfb8] shadow-[0_10px_25px_rgba(43,31,18,0.22)] transition-all hover:-translate-y-0.5 hover:bg-black active:translate-y-0 sm:w-auto"
               >
@@ -806,7 +569,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           handleSimulateUpgrade
         }
         onFixMyBudget={
-          handleFixMyBudget
+          onFixBudget
         }
         isOverBudget={
           isOverBudget
