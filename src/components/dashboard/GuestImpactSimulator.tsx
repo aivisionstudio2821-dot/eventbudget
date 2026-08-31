@@ -12,7 +12,7 @@ import {
 
 import { EventState } from '../../types';
 import { formatINR } from '../../utils/currencyFormatter';
-import { calculateAllocations } from '../../utils/budgetCalculations';
+import { calculateSmartAllocations } from '../../utils/budgetCalculations';
 
 interface GuestImpactSimulatorProps {
   event: EventState;
@@ -35,18 +35,15 @@ export const GuestImpactSimulator: React.FC<
 
     const currentAllocations = event.allocations;
 
-    const simulatedAllocations = calculateAllocations(
+    const simulatedAllocations = calculateSmartAllocations(
       event.totalBudget,
       safeGuests,
       event.eventType,
       event.priority
     );
 
-    const currentFood =
-      currentAllocations.food || 0;
-
-    const simulatedFood =
-      simulatedAllocations.food || 0;
+    const currentFood = currentAllocations.food || 0;
+    const simulatedFood = simulatedAllocations.food || 0;
 
     const currentFoodPerGuest =
       currentFood / currentGuests;
@@ -181,6 +178,8 @@ export const GuestImpactSimulator: React.FC<
             </div>
           </div>
 
+          {/* RANGE */}
+
           <div className="mt-6">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-bold text-[#706354]">
@@ -211,6 +210,7 @@ export const GuestImpactSimulator: React.FC<
 
             <div className="mt-2 flex justify-between text-[10px] font-bold text-[#a09381]">
               <span>1 Guest</span>
+
               <span>
                 {Math.min(
                   5000,
@@ -222,9 +222,11 @@ export const GuestImpactSimulator: React.FC<
           </div>
         </div>
 
-        {/* CHANGE SUMMARY */}
+        {/* IMPACT CARDS */}
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* GUEST CHANGE */}
+
           <div className="rounded-2xl border border-[#e5d8bc] bg-white p-5">
             <Users className="h-5 w-5 text-[#9a7133]" />
 
@@ -249,6 +251,8 @@ export const GuestImpactSimulator: React.FC<
                   }`}
             </p>
           </div>
+
+          {/* BUDGET PER GUEST */}
 
           <div className="rounded-2xl border border-[#e5d8bc] bg-white p-5">
             <Wallet className="h-5 w-5 text-[#9a7133]" />
@@ -275,6 +279,8 @@ export const GuestImpactSimulator: React.FC<
             </p>
           </div>
 
+          {/* FOOD */}
+
           <div className="rounded-2xl border border-[#e5d8bc] bg-white p-5">
             <UtensilsCrossed className="h-5 w-5 text-[#9a7133]" />
 
@@ -292,6 +298,8 @@ export const GuestImpactSimulator: React.FC<
               Recalculated planning allocation
             </p>
           </div>
+
+          {/* FOOD PRESSURE */}
 
           <div
             className={`rounded-2xl border p-5 ${
@@ -391,7 +399,9 @@ export const GuestImpactSimulator: React.FC<
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[#756652]">
                 {isIncrease
-                  ? `Adding ${simulation.guestDifference} guests reduces the available total budget per guest from ${formatINR(
+                  ? `Adding ${
+                      simulation.guestDifference
+                    } guests reduces the available total budget per guest from ${formatINR(
                       Math.round(
                         simulation.currentBudgetPerGuest
                       )
