@@ -30,6 +30,7 @@ import { BudgetDonutChart } from './BudgetDonutChart';
 import { CategoryCards } from './CategoryCards';
 import { InteractiveBudgetEditor } from './InteractiveBudgetEditor';
 import { WhatCanIGet } from './WhatCanIGet';
+import { PriceMethodology } from './PriceMethodology';
 import { CanIAddThisModal } from './CanIAddThisModal';
 import { HealthScoreModal } from './HealthScoreModal';
 
@@ -576,6 +577,10 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
         }
         overAmount={overAmount}
       />
+
+      {/* PRICING TRANSPARENCY */}
+
+      <PriceMethodology />
 
       {/* CATEGORY CARDS */}
 
