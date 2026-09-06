@@ -152,7 +152,6 @@ export function calculateSmartAllocations(
       break;
   }
 
-  // Guest-count pressure
   if (guestCount > 100) {
     weights.food += 0.05;
     weights.misc -= 0.02;
@@ -162,7 +161,6 @@ export function calculateSmartAllocations(
     weights.decoration += 0.03;
   }
 
-  // Priority adjustment
   switch (priority) {
     case 'Food':
       weights.food += 0.08;
@@ -257,21 +255,12 @@ export function calculateSmartAllocations(
   return rawAllocations;
 }
 
-/**
- * Calculates current selected cost for food.
- *
- * Priority:
- * 1. Applied vendor quote
- * 2. Selected food package
- * 3. Individually selected menu items
- */
 export function calculateFoodTotal(
   state: EventState
 ): number {
   const appliedQuoteId =
     state.appliedQuoteIds?.food;
 
-  // A real vendor quote overrides estimates.
   if (appliedQuoteId) {
     const quote =
       state.quotes.find(
@@ -289,20 +278,6 @@ export function calculateFoodTotal(
       state.guestCount || 1
     );
 
-  /**
-   * FIX:
-   *
-   * If a preset food package is selected,
-   * calculate using its stated package price.
-   *
-   * Example:
-   * Standard package ₹385 × 100 guests
-   * = ₹38,500
-   *
-   * We must NOT add individual item prices
-   * again because that can produce a
-   * different total from the package price.
-   */
   if (state.selectedFoodPackageId) {
     const selectedPackage =
       FOOD_PACKAGES.find(
@@ -319,7 +294,6 @@ export function calculateFoodTotal(
     }
   }
 
-  // Manual/custom menu calculation
   let perPersonTotal = 0;
 
   Object.entries(
@@ -354,10 +328,6 @@ export function calculateFoodTotal(
   );
 }
 
-/**
- * Calculates current selected cost
- * for decoration
- */
 export function calculateDecorTotal(
   state: EventState
 ): number {
@@ -405,10 +375,6 @@ export function calculateDecorTotal(
   return total;
 }
 
-/**
- * Calculates current selected cost
- * for DJ & Entertainment
- */
 export function calculateDJTotal(
   state: EventState
 ): number {
@@ -457,10 +423,6 @@ export function calculateDJTotal(
   return total;
 }
 
-/**
- * Calculates current selected cost
- * for Photography
- */
 export function calculatePhotoTotal(
   state: EventState
 ): number {
@@ -509,10 +471,6 @@ export function calculatePhotoTotal(
   return total;
 }
 
-/**
- * Calculates current selected cost
- * for Venue
- */
 export function calculateVenueTotal(
   state: EventState
 ): number {
@@ -581,10 +539,6 @@ export function calculateVenueTotal(
   );
 }
 
-/**
- * Calculates current selected cost
- * for Miscellaneous
- */
 export function calculateMiscTotal(
   state: EventState
 ): number {
@@ -615,9 +569,6 @@ export function calculateMiscTotal(
     );
 }
 
-/**
- * Calculates totals for all categories
- */
 export function calculateCategoryTotals(
   state: EventState
 ): Record<CategoryKey, number> {
@@ -645,10 +596,6 @@ export function calculateCategoryTotals(
   };
 }
 
-/**
- * Total actual selected/planned spend.
- * Emergency buffer is intentionally excluded.
- */
 export function calculateTotalPlanned(
   state: EventState
 ): number {
@@ -666,8 +613,7 @@ export function calculateTotalPlanned(
 }
 
 /**
- * Rebalance helper to automatically
- * fix an over-budget event
+ * FIXED REBALANCE FUNCTION
  */
 export function rebalanceEventAllocations(
   state: EventState,
@@ -680,46 +626,52 @@ export function rebalanceEventAllocations(
     amount: number;
   }[];
 } {
-  const totalBudget =
-    state.totalBudget;
+  const totalBudget = Math.max(
+    0,
+    state.totalBudget || 0
+  );
 
   const totals =
     calculateCategoryTotals(state);
 
-  const plannedExBuffer =
-    calculateTotalPlanned(state);
+  const selectedSpend =
+    totals.food +
+    totals.venue +
+    totals.decoration +
+    totals.dj +
+    totals.photography +
+    totals.misc;
 
-  const bufferAllocated =
-    state.allocations.buffer || 0;
+  const currentBuffer = Math.max(
+    0,
+    state.allocations.buffer || 0
+  );
 
-  const overspend =
-    plannedExBuffer +
-    bufferAllocated -
-    totalBudget;
+  const currentCommitted =
+    selectedSpend + currentBuffer;
 
-  const deficit =
+  const actualOverspend = Math.max(
+    0,
+    currentCommitted - totalBudget
+  );
+
+  const deficit = Math.max(
+    0,
     targetExcess !== undefined
       ? targetExcess
-      : Math.max(
-          0,
-          overspend
-        );
+      : actualOverspend
+  );
+
+  const newAllocations: CategoryAllocations = {
+    ...state.allocations,
+  };
 
   const adjustments: {
     category: string;
     amount: number;
   }[] = [];
 
-  let remainingDeficit =
-    deficit;
-
-  const newAllocations = {
-    ...state.allocations,
-  };
-
-  if (
-    remainingDeficit <= 0
-  ) {
+  if (deficit <= 0) {
     return {
       newAllocations,
       savedAmount: 0,
@@ -727,222 +679,73 @@ export function rebalanceEventAllocations(
     };
   }
 
-  const categoriesToTrim: {
-    key: CategoryKey;
-    name: string;
-    priorityScore: number;
-  }[] = [
-    {
-      key: 'buffer',
-      name: 'Emergency Buffer',
-      priorityScore: 1,
-    },
+  let remainingDeficit = deficit;
 
-    {
-      key: 'misc',
-      name: 'Miscellaneous',
-      priorityScore: 2,
-    },
+  // Reduce safety buffer first
+  if (
+    remainingDeficit > 0 &&
+    currentBuffer > 0
+  ) {
+    const bufferCut = Math.min(
+      currentBuffer,
+      remainingDeficit
+    );
 
-    {
-      key: 'decoration',
-      name: 'Decoration',
-      priorityScore: 3,
-    },
+    newAllocations.buffer =
+      currentBuffer - bufferCut;
 
-    {
-      key: 'photography',
-      name: 'Photography',
-      priorityScore: 4,
-    },
+    remainingDeficit -= bufferCut;
 
-    {
-      key: 'dj',
-      name: 'DJ & Entertainment',
-      priorityScore: 5,
-    },
+    adjustments.push({
+      category: 'Emergency Buffer',
+      amount: bufferCut,
+    });
+  }
 
-    {
-      key: 'venue',
-      name: 'Venue',
-      priorityScore: 6,
-    },
-
-    {
-      key: 'food',
-      name: 'Food & Catering',
-      priorityScore: 7,
-    },
+  // Sync allocations to actual selected costs
+  const actualCategoryKeys: CategoryKey[] = [
+    'food',
+    'venue',
+    'decoration',
+    'dj',
+    'photography',
+    'misc',
   ];
 
-  // Protect selected priority
-  categoriesToTrim.forEach(
-    category => {
-      if (
-        (state.priority ===
-          'Food' &&
-          category.key ===
-            'food') ||
-
-        (state.priority ===
-          'Venue' &&
-          category.key ===
-            'venue') ||
-
-        (state.priority ===
-          'Decoration' &&
-          category.key ===
-            'decoration') ||
-
-        (state.priority ===
-          'DJ / Music' &&
-          category.key ===
-            'dj') ||
-
-        (state.priority ===
-          'Photography' &&
-          category.key ===
-            'photography')
-      ) {
-        category.priorityScore =
-          99;
-      }
+  actualCategoryKeys.forEach(
+    key => {
+      newAllocations[key] = Math.max(
+        0,
+        totals[key] || 0
+      );
     }
   );
 
-  categoriesToTrim.sort(
-    (a, b) =>
-      a.priorityScore -
-      b.priorityScore
-  );
-
-  /**
-   * First remove unused allocated
-   * budget before touching actual
-   * selected services.
-   */
-  categoriesToTrim.forEach(
-    category => {
-      if (
-        remainingDeficit <= 0
-      ) {
-        return;
-      }
-
-      const currentAlloc =
-        newAllocations[
-          category.key
-        ] || 0;
-
-      const currentActual =
-        category.key ===
-        'buffer'
-          ? 0
-          : totals[
-              category.key
-            ];
-
-      const excess =
-        Math.max(
-          0,
-          currentAlloc -
-            currentActual
-        );
-
-      if (excess > 0) {
-        const cut =
-          Math.min(
-            remainingDeficit,
-            excess
-          );
-
-        newAllocations[
-          category.key
-        ] =
-          currentAlloc -
-          cut;
-
-        remainingDeficit -=
-          cut;
-
-        adjustments.push({
-          category:
-            category.name,
-          amount: cut,
-        });
-      }
-    }
-  );
-
-  /**
-   * If still over budget,
-   * trim non-priority allocations
-   * by up to 30%.
-   */
-  if (
-    remainingDeficit > 0
-  ) {
-    categoriesToTrim.forEach(
-      category => {
-        if (
-          remainingDeficit <= 0 ||
-          category.priorityScore >=
-            90
-        ) {
-          return;
-        }
-
-        const currentAlloc =
-          newAllocations[
-            category.key
-          ] || 0;
-
-        const maxCut =
-          Math.floor(
-            currentAlloc * 0.3
-          );
-
-        if (maxCut > 0) {
-          const cut =
-            Math.min(
-              remainingDeficit,
-              maxCut
-            );
-
-          newAllocations[
-            category.key
-          ] =
-            currentAlloc -
-            cut;
-
-          remainingDeficit -=
-            cut;
-
-          adjustments.push({
-            category:
-              category.name,
-            amount: cut,
-          });
-        }
-      }
+  const finalCommitted =
+    selectedSpend +
+    Math.max(
+      0,
+      newAllocations.buffer || 0
     );
-  }
+
+  const trueRemainingOverspend =
+    Math.max(
+      0,
+      finalCommitted - totalBudget
+    );
+
+  const trulySaved = Math.max(
+    0,
+    deficit - trueRemainingOverspend
+  );
 
   return {
     newAllocations,
-
-    savedAmount:
-      deficit -
-      remainingDeficit,
-
+    savedAmount: trulySaved,
     adjustments,
   };
 }
 
-/**
- * Suggestions for cheaper alternatives
- * if Food or any category is over budget.
- */
 export function getSmartAlternatives(
   state: EventState
 ): {
@@ -982,7 +785,6 @@ export function getSmartAlternatives(
       state.guestCount || 1
     );
 
-  // Food alternative
   if (
     state.selectedFoodItems
       ?.starter_paneer_tikka &&
@@ -1095,7 +897,6 @@ export function getSmartAlternatives(
     });
   }
 
-  // Decoration alternative
   if (
     state.selectedDecorItems
       ?.decor_floral
@@ -1115,7 +916,6 @@ export function getSmartAlternatives(
     });
   }
 
-  // DJ alternative
   if (
     state.selectedEntertainment
       ?.ent_dj_premium_sound &&
@@ -1129,15 +929,14 @@ export function getSmartAlternatives(
       title:
         'Switch DJ Premium Line-Array to Standard Sound',
 
-  description:
-  'Save ₹8,000 with a powerful 4-speaker setup perfectly suited for under 100 guests.',
+      description:
+        'Save ₹8,000 with a powerful 4-speaker setup perfectly suited for under 100 guests.',
 
-savings: 8000,
+      savings: 8000,
 
-action: () => {},
-});
+      action: () => {},
+    });
+  }
+
+  return suggestions;
 }
-
-return suggestions;
-}
-  
