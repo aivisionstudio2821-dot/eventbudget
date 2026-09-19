@@ -26,7 +26,6 @@ import {
 import { createDemoEvent } from './data/demoEvent';
 
 import { EventPreview } from './components/EventPreview';
-import { ChallengeMode } from './components/ChallengeMode';
 import { Navbar } from './components/layout/Navbar';
 import { TeamSection } from './components/TeamSection';
 import { Footer } from './components/layout/Footer';
@@ -907,12 +906,55 @@ export const App: React.FC = () => {
       plannedSpend +
       bufferAllocated;
 
+    const categoryOverage = (
+      Object.entries(
+        event.allocations || {}
+      ) as [string, number][]
+    ).reduce(
+      (sum, [key, allocated]) => {
+        if (
+          ![
+            'food',
+            'venue',
+            'decoration',
+            'dj',
+            'photography',
+            'misc',
+          ].includes(key)
+        ) {
+          return sum;
+        }
+
+        const categoryKey =
+          key as CategoryKey;
+        const selected =
+          calculateCategoryTotals(
+            event
+          )[categoryKey] || 0;
+
+        return (
+          sum +
+          Math.max(
+            0,
+            selected -
+              (allocated || 0)
+          )
+        );
+      },
+      0
+    );
+
     let remainingOver =
       Math.max(
         0,
         totalCommitted -
           event.totalBudget
       );
+
+    remainingOver = Math.max(
+      remainingOver,
+      categoryOverage
+    );
 
     if (
       remainingOver <= 0
@@ -1848,22 +1890,6 @@ export const App: React.FC = () => {
       />
 
       <EventPreview />
-
-      <ChallengeMode
-        budget={
-          event?.totalBudget ??
-          50000
-        }
-        guestCount={
-          event?.guestCount ??
-          50
-        }
-        eventKey={
-          event
-            ? `${event.eventType}-${event.totalBudget}-${event.guestCount}-${event.priority}`
-            : 'demo'
-        }
-      />
 
       <TeamSection />
 

@@ -21,7 +21,10 @@ import {
 } from '../../types';
 
 import { formatINR } from '../../utils/currencyFormatter';
-import { calculateTotalPlanned } from '../../utils/budgetCalculations';
+import {
+  calculateCategoryTotals,
+  calculateTotalPlanned,
+} from '../../utils/budgetCalculations';
 import { calculateEventHealthScore } from '../../utils/eventScoring';
 
 import { BudgetDonutChart } from './BudgetDonutChart';
@@ -63,8 +66,21 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
   const remainingBudget = totalBudget - plannedSpend;
   const netCushion = totalBudget - totalCommitted;
 
+  const categoryTotals = calculateCategoryTotals(event);
+  const categoryOverageAmount = Object.entries(event.allocations).reduce((sum, [key, allocated]) => {
+    if (!['food', 'venue', 'decoration', 'dj', 'photography', 'misc'].includes(key)) {
+      return sum;
+    }
+
+    const categoryKey = key as keyof typeof categoryTotals;
+    const selected = categoryTotals[categoryKey] || 0;
+    return sum + Math.max(0, selected - (allocated || 0));
+  }, 0);
+
   const isOverBudget = netCushion < 0;
   const overAmount = Math.abs(netCushion);
+  const hasBudgetIssue = isOverBudget || categoryOverageAmount > 0;
+  const adjustmentNeeded = Math.max(overAmount, categoryOverageAmount);
 
   const costPerGuest = Math.round(plannedSpend / guestCount);
 
@@ -252,6 +268,28 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {hasBudgetIssue && (
+        <div className="rounded-[22px] border border-[#d79c94] bg-gradient-to-r from-[#fff0ed] via-[#fff6f2] to-[#f8e6df] p-4 shadow-[0_12px_32px_rgba(128,62,51,0.08)]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#a45b52]">Budget Rescue</p>
+              <h3 className="mt-1 text-base font-black text-[#6f302b]">
+                Your plan needs {formatINR(adjustmentNeeded)} adjustment
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              onClick={onFixBudget}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#211a12] px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.12em] text-[#f4dfb8] shadow-[0_10px_25px_rgba(43,31,18,0.22)] transition-all hover:-translate-y-0.5 hover:bg-black active:translate-y-0"
+            >
+              <Zap className="h-4 w-4 fill-[#e5c17d] text-[#e5c17d]" />
+              Fix My Budget
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* KPI CARDS */}
 
@@ -522,146 +560,59 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       <PlanExplanation event={event} />
 
       {/* FINAL EVENT SUMMARY */}
+      <div className="overflow-hidden rounded-[28px] border border-[#d7c7aa] bg-[#fffaf1] shadow-[0_18px_40px_rgba(64,47,28,0.08)]">
+        <div className="flex flex-col justify-between gap-4 border-b border-[#e3d6bc] bg-gradient-to-r from-[#201b15] via-[#2b241d] to-[#17130e] px-5 py-5 sm:flex-row sm:items-center sm:px-6">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#d8b56c]">Final Summary</p>
+            <h3 className="mt-1 text-xl font-black text-[#fffaf0]">{event.title}</h3>
+          </div>
 
-<div className="overflow-hidden rounded-[30px] border border-[#d7c7aa] bg-[#fffaf1] shadow-[0_18px_50px_rgba(64,47,28,0.08)]">
-  <div className="border-b border-[#dfd2bd] bg-gradient-to-r from-[#211a12] via-[#2c2419] to-[#17130e] px-5 py-6 sm:px-7">
-    <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#d3ae6b]">
-          Final Event Summary
-        </p>
-
-        <h3 className="mt-1 font-heading text-2xl font-black text-[#fff9ee]">
-          Your complete plan at a glance
-        </h3>
-
-        <p className="mt-3 text-xs font-semibold text-[#c8baa4]">
-          {event.eventType} • {event.city} • {event.guestCount} guests • Priority: {event.priority}
-        </p>
-      </div>
-
-      <div
-        className={`rounded-2xl border px-5 py-4 ${
-          isOverBudget
-            ? 'border-[#d98f84]/40 bg-[#8d4038]/20'
-            : 'border-[#9fb177]/35 bg-[#81935f]/15'
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          {isOverBudget ? (
-            <AlertTriangle className="h-4 w-4 text-[#f0afa4]" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4 text-[#c8dda1]" />
-          )}
-
-          <span
-            className={`text-[10px] font-black uppercase tracking-[0.16em] ${
-              isOverBudget
-                ? 'text-[#f0afa4]'
-                : 'text-[#c8dda1]'
-            }`}
-          >
-            {isOverBudget ? 'Over Budget' : 'Within Budget'}
-          </span>
+          <div className={`rounded-2xl border px-4 py-3 ${isOverBudget ? 'border-[#d98f84]/40 bg-[#8d4038]/20' : 'border-[#9fb177]/35 bg-[#81935f]/15'}`}>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#d9cbc0]">
+              {isOverBudget ? 'Over Budget' : 'Within Budget'}
+            </p>
+            <p className="mt-1 font-mono-num text-lg font-black text-[#fffaf0]">
+              {isOverBudget ? `${formatINR(overAmount)} over` : `${formatINR(netCushion)} cushion`}
+            </p>
+          </div>
         </div>
 
-        <p className="mt-1 font-mono-num text-2xl font-black text-[#fff9ee]">
-          {isOverBudget
-            ? `${formatINR(overAmount)} over`
-            : `${formatINR(netCushion)} cushion`}
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <div className="grid gap-3 border-b border-[#e2d7c5] bg-[#f7efe2] p-5 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
-    <div className="rounded-2xl border border-[#dfd2bd] bg-white/70 p-4">
-      <p className="text-[10px] font-black uppercase text-[#8d7c66]">
-        Total Budget
-      </p>
-      <p className="mt-2 font-mono-num text-xl font-black text-[#2a2118]">
-        {formatINR(totalBudget)}
-      </p>
-    </div>
-
-    <div className="rounded-2xl border border-[#dfd2bd] bg-white/70 p-4">
-      <p className="text-[10px] font-black uppercase text-[#8d7c66]">
-        Planned Spend
-      </p>
-      <p className="mt-2 font-mono-num text-xl font-black text-[#2a2118]">
-        {formatINR(plannedSpend)}
-      </p>
-    </div>
-
-    <div className="rounded-2xl border border-[#dfd2bd] bg-white/70 p-4">
-      <p className="text-[10px] font-black uppercase text-[#8d7c66]">
-        Cost / Guest
-      </p>
-      <p className="mt-2 font-mono-num text-xl font-black text-[#2a2118]">
-        {formatINR(costPerGuest)}
-      </p>
-    </div>
-
-    <div className="rounded-2xl border border-[#dfd2bd] bg-white/70 p-4">
-      <p className="text-[10px] font-black uppercase text-[#8d7c66]">
-        Health Score
-      </p>
-      <p
-        className="mt-2 font-mono-num text-xl font-black"
-        style={{ color: healthData.statusColor }}
-      >
-        {healthData.overallScore}/100
-      </p>
-    </div>
-  </div>
-
-  <div className="p-5 sm:p-7">
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {[
-        ['Food & Catering', event.allocations.food || 0],
-        ['Venue', event.allocations.venue || 0],
-        ['Decoration', event.allocations.decoration || 0],
-        ['DJ & Entertainment', event.allocations.dj || 0],
-        ['Photography', event.allocations.photography || 0],
-        ['Miscellaneous', event.allocations.misc || 0],
-        ['Safety Buffer', bufferAllocated],
-      ].map(([label, amount]) => (
-        <div
-          key={String(label)}
-          className="flex items-center justify-between rounded-2xl border border-[#e2d7c6] bg-white p-4"
-        >
-          <p className="text-xs font-black text-[#33291f]">
-            {label}
-          </p>
-
-          <p className="font-mono-num text-sm font-black text-[#725126]">
-            {formatINR(Number(amount))}
-          </p>
+        <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-[#e2d7c6] bg-white p-4">
+            <p className="text-[10px] font-black uppercase text-[#8d7c66]">Total Budget</p>
+            <p className="mt-2 font-mono-num text-lg font-black text-[#2a2118]">{formatINR(totalBudget)}</p>
+          </div>
+          <div className="rounded-2xl border border-[#e2d7c6] bg-white p-4">
+            <p className="text-[10px] font-black uppercase text-[#8d7c66]">Planned Spend</p>
+            <p className="mt-2 font-mono-num text-lg font-black text-[#2a2118]">{formatINR(plannedSpend)}</p>
+          </div>
+          <div className="rounded-2xl border border-[#e2d7c6] bg-white p-4">
+            <p className="text-[10px] font-black uppercase text-[#8d7c66]">Remaining</p>
+            <p className={`mt-2 font-mono-num text-lg font-black ${remainingBudget < 0 ? 'text-[#a44840]' : 'text-[#607044]'}`}>{formatINR(remainingBudget)}</p>
+          </div>
+          <div className="rounded-2xl border border-[#e2d7c6] bg-white p-4">
+            <p className="text-[10px] font-black uppercase text-[#8d7c66]">Health</p>
+            <p className="mt-2 font-mono-num text-lg font-black" style={{ color: healthData.statusColor }}>{healthData.overallScore}/100</p>
+          </div>
         </div>
-      ))}
-    </div>
 
-    <div className="mt-5 flex flex-col justify-between gap-4 rounded-2xl border border-[#d9c8aa] bg-[#f2e6d2] p-4 sm:flex-row sm:items-center">
-      <div>
-        <p className="text-[10px] font-black uppercase text-[#8d6731]">
-          Planning Priority
-        </p>
-        <p className="mt-1 text-sm font-black text-[#3d2f1f]">
-          {event.priority}
-        </p>
-      </div>
+        <div className="flex flex-col gap-3 border-t border-[#e2d7c6] bg-[#f7efe2] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-3 text-xs text-[#584d3d]">
+            <span>{event.eventType}</span>
+            <span>•</span>
+            <span>{event.city}</span>
+            <span>•</span>
+            <span>{event.guestCount} guests</span>
+            <span>•</span>
+            <span>{event.priority}</span>
+          </div>
 
-      <div className="sm:text-right">
-        <p className="text-[10px] font-black uppercase text-[#8d6731]">
-          Total Committed
-        </p>
-        <p className="mt-1 font-mono-num text-lg font-black text-[#3d2f1f]">
-          {formatINR(totalCommitted)}
-        </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase text-[#8d6731]">Safety Buffer</span>
+            <span className="font-mono-num text-sm font-black text-[#3d2f1f]">{formatINR(bufferAllocated)}</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
       {/* GUEST IMPACT SIMULATOR */}
 
@@ -691,6 +642,7 @@ export const BudgetDashboard: React.FC<BudgetDashboardProps> = ({
       <CategoryCards
         event={event}
         onSelectCategory={onSelectCategory}
+        onFixBudget={onFixBudget}
       />
 
       {/* MODALS */}

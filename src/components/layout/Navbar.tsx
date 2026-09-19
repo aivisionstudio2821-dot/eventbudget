@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
   Sparkles,
-  Zap,
   PlusCircle,
   RotateCcw,
   Save,
   Menu,
   X,
-  TrendingUp,
-  Store
+  Store,
+  Wallet,
+  Building2,
 } from 'lucide-react';
 
 import { EventState } from '../../types';
@@ -43,12 +43,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onUpgradeClick,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const plannedTotal = event ? calculateTotalPlanned(event) : 0;
-
-  const isOverBudget = event
-    ? plannedTotal + (event.allocations.buffer || 0) > event.totalBudget
-    : false;
+  const isOverBudget = event ? plannedTotal + (event.allocations.buffer || 0) > event.totalBudget : false;
 
   const scrollTo = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -61,388 +57,165 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  const navItems = [
+    { id: 'hero-section', label: 'Plan', icon: PlusCircle },
+    { id: 'dashboard-section', label: 'Budget', icon: Wallet },
+    { id: 'vendors-section', label: 'Vendors', icon: Store },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#06090b]/92 backdrop-blur-xl border-b border-amber-900/25 transition-all">
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <div className="flex items-center justify-between h-16 sm:h-20">
-
-          {/* LOGO */}
-          <div
-            className="flex items-center gap-3 cursor-pointer"
-            onClick={() => scrollTo('hero-section')}
-          >
-
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#a8792c] via-[#e2c46f] to-[#2dd4a3] p-[2px] shadow-lg shadow-amber-900/25">
-
-              <div className="w-full h-full bg-[#080c0e] rounded-[10px] flex items-center justify-center">
-
-                <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
-
-              </div>
-
+    <header className="sticky top-0 z-50 w-full border-b border-[#413626]/30 bg-[#0b0d0e]/90 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between sm:h-18">
+          <div className="flex items-center gap-3" onClick={() => scrollTo('hero-section')}>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#d5b06c]/35 bg-[#1a140f] shadow-[0_8px_22px_rgba(0,0,0,0.18)]">
+              <Sparkles className="h-5 w-5 text-[#f0cd7b]" />
             </div>
 
-            <div>
-
-              <div className="flex items-center gap-1.5">
-
-                <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-white font-heading">
-
-                  Event
-
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f7e7b0] via-[#d6b36a] to-[#f0c96c]">
-                    Budget
-                  </span>
-
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-black tracking-tight text-white sm:text-2xl">
+                Event
+                <span className="bg-gradient-to-r from-[#f6e3ac] via-[#d6b36a] to-[#f0c96c] bg-clip-text text-transparent">Budget</span>
+              </span>
+              {isProActive && (
+                <span className="inline-flex items-center rounded-full border border-[#f3d18a]/40 bg-[#f3d18a]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-[#f8dc96]">
+                  PRO
                 </span>
-
-                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                  MVP
-                </span>
-
-                {isProActive && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-[#f3d18a]/40 bg-[#f3d18a]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-[#f8dc96]">
-                    <Sparkles className="h-2.5 w-2.5" />
-                    PRO
-                  </span>
-                )}
-
-              </div>
-
-              <p className="hidden sm:block text-[11px] text-slate-400 tracking-normal font-medium -mt-1">
-                You set the budget. We plan the celebration.
-              </p>
-
+              )}
             </div>
-
           </div>
 
-          {/* DESKTOP NAVIGATION */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                    isActive ? 'bg-[#1d1915] text-[#f2d59f] ring-1 ring-[#d0ab68]/25' : 'text-slate-300 hover:bg-[#171411] hover:text-[#f7e8bf]'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </button>
+              );
+            })}
 
             <button
-              onClick={() => scrollTo('hero-section')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                activeSection === 'hero-section'
-                  ? 'text-amber-300 bg-amber-500/10'
-                  : 'text-slate-300 hover:text-amber-200 hover:bg-slate-800/30'
-              }`}
+              type="button"
+              onClick={onOpenVendorOnboarding}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#d7c39e]/25 bg-[#17120f] px-3 py-2 text-sm font-medium text-[#f5e7c6] transition hover:border-[#d2a75d]/40 hover:bg-[#201a16]"
             >
-              Overview
+              <Building2 className="h-4 w-4 text-[#d9b76d]" />
+              For Vendors
             </button>
-
-            {event && (
-              <>
-
-                <button
-                  onClick={() => scrollTo('dashboard-section')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-                    activeSection === 'dashboard-section'
-                      ? 'text-amber-400 bg-amber-500/10'
-                      : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800/30'
-                  }`}
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  Budget Dashboard
-                </button>
-
-                <button
-                  onClick={() => scrollTo('planners-section')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    activeSection === 'planners-section'
-                      ? 'text-amber-400 bg-amber-500/10'
-                      : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800/30'
-                  }`}
-                >
-                  Category Planners
-                </button>
-
-                <button
-                  onClick={() => scrollTo('vendors-section')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-                    activeSection === 'vendors-section'
-                      ? 'text-amber-400 bg-amber-500/10'
-                      : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800/30'
-                  }`}
-                >
-                  <Store className="w-4 h-4" />
-                  Ahmedabad Vendors
-                </button>
-
-              </>
-            )}
-
           </nav>
 
-          {/* DESKTOP ACTIONS */}
-          <div className="hidden sm:flex items-center gap-2.5">
-
+          <div className="hidden items-center gap-2 sm:flex">
             {event && (
-              <div
-                className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
-                  isOverBudget
-                    ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                }`}
-              >
-
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isOverBudget
-                      ? 'bg-red-500 animate-ping'
-                      : 'bg-emerald-500'
-                  }`}
-                />
-
-                <span>
-                  {event.eventType}: {formatINR(event.totalBudget)}
-                </span>
-
+              <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold ${isOverBudget ? 'border-red-500/30 bg-red-500/10 text-red-300' : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'}`}>
+                <span className={`h-2 w-2 rounded-full ${isOverBudget ? 'bg-red-400' : 'bg-emerald-400'}`} />
+                {event.eventType}: {formatINR(event.totalBudget)}
               </div>
             )}
 
             <button
               type="button"
-              onClick={onOpenVendorOnboarding}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#f0e6d4] bg-[#1b1712] border border-[#d1a85e]/40 hover:bg-[#231d17] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
-              title="List your business on EventBudget"
+              onClick={onOpenCreateModal}
+              className="rounded-xl border border-[#d0ae6e]/35 bg-gradient-to-r from-[#c99a42] via-[#f0d58a] to-[#c99a42] px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#1c150d] shadow-[0_8px_20px_rgba(201,154,66,0.2)] transition hover:brightness-105"
             >
-              <Store className="w-3.5 h-3.5 text-[#d5b56b]" />
-              <span>FOR VENDORS</span>
+              New Event
+            </button>
+
+            <button
+              type="button"
+              onClick={onSaveEvent}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#2e3838] bg-[#101416] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-[#4a5858] hover:bg-[#171d1e]"
+            >
+              <Save className="h-3.5 w-3.5 text-[#ddb770]" />
+              {hasSavedChanges ? 'Save' : 'Saved'}
+            </button>
+
+            <button
+              type="button"
+              onClick={onResetEvent}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#2e3838] bg-[#101416] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-[#6c4a4a] hover:bg-[#1e1717]"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-[#d9b5a1]" />
+              Reset
             </button>
 
             <button
               type="button"
               onClick={isProActive ? undefined : onUpgradeClick}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
-                isProActive
-                  ? 'border border-[#f3d18a]/40 bg-[#f3d18a]/10 text-[#f8dc96]'
-                  : 'border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:border-amber-400'
-              }`}
-              title={isProActive ? 'EventBudget PRO is active for this session' : 'Upgrade to EventBudget PRO'}
+              className={`rounded-xl px-3 py-2 text-xs font-black uppercase tracking-[0.12em] transition ${isProActive ? 'border border-[#f3d18a]/40 bg-[#f3d18a]/10 text-[#f8dc96]' : 'border border-[#d2a75d]/40 bg-[#f7e2b4]/10 text-[#f3d08c] hover:bg-[#f7e2b4]/15'}`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{isProActive ? 'PRO ACTIVE' : 'UPGRADE TO PRO'}</span>
+              {isProActive ? 'PRO' : 'Upgrade'}
             </button>
-
-            <button
-              onClick={onLoadDemo}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
-              title="Load instant ₹50,000 Ahmedabad Birthday Demo"
-            >
-
-              <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
-
-              <span>⚡ DEMO EVENT</span>
-
-            </button>
-
-            {event ? (
-
-              <div className="flex items-center gap-1.5">
-
-                <button
-                  onClick={onSaveEvent}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-[#111718] hover:bg-[#182020] border border-slate-700 transition-all flex items-center gap-1.5 active:scale-95"
-                  title="Save event to localStorage"
-                >
-
-                  <Save className="w-3.5 h-3.5 text-amber-400" />
-
-                  <span>
-                    {hasSavedChanges ? 'Save Plan' : 'Saved'}
-                  </span>
-
-                </button>
-
-                <button
-                  onClick={onResetEvent}
-                  className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 transition-all"
-                  title="Reset Event"
-                >
-
-                  <RotateCcw className="w-3.5 h-3.5" />
-
-                </button>
-
-              </div>
-
-            ) : (
-
-              <button
-                onClick={onOpenCreateModal}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-[#080a0b] bg-gradient-to-r from-[#c99a42] via-[#f0d58a] to-[#c99a42] hover:from-[#ddb35e] hover:via-[#ffe7a6] hover:to-[#ddb35e] shadow-md shadow-amber-900/25 transition-all flex items-center gap-1.5 active:scale-95"
-              >
-
-                <PlusCircle className="w-4 h-4" />
-
-                <span>PLAN MY EVENT</span>
-
-              </button>
-
-            )}
-
           </div>
 
-          {/* MOBILE */}
-          <div className="flex lg:hidden items-center gap-2">
-
+          <div className="flex items-center gap-2 lg:hidden">
             <button
-              onClick={onLoadDemo}
-              className="sm:hidden px-2 py-1 rounded-lg text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 active:scale-95 flex items-center gap-1"
+              type="button"
+              onClick={onOpenCreateModal}
+              className="rounded-xl border border-[#d0ae6e]/35 bg-gradient-to-r from-[#c99a42] via-[#f0d58a] to-[#c99a42] px-2.5 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#1c150d]"
             >
-
-              <Zap className="w-3 h-3 fill-amber-300" />
-
-              <span>⚡ DEMO</span>
-
+              New
             </button>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-300 hover:text-amber-200 bg-[#111718]/80 border border-slate-700"
+              className="rounded-xl border border-[#2e3838] bg-[#111718] p-2 text-slate-200"
               aria-label="Toggle navigation menu"
             >
-
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-
+              {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-
           </div>
-
         </div>
-
       </div>
 
-      {/* MOBILE DRAWER */}
       {isMobileMenuOpen && (
+        <div className="border-t border-[#413626]/30 bg-[#090d0e] px-4 py-3 lg:hidden">
+          <div className="space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  className="flex w-full items-center gap-2 rounded-xl border border-[#201c17] bg-[#121315] px-3 py-2.5 text-left text-sm font-medium text-slate-200"
+                >
+                  <Icon className="h-4 w-4 text-[#d9b76d]" />
+                  {item.label}
+                </button>
+              );
+            })}
 
-        <div className="lg:hidden bg-[#090d0e] border-b border-amber-900/20 px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-4 duration-200">
+            <button
+              type="button"
+              onClick={onOpenVendorOnboarding}
+              className="flex w-full items-center gap-2 rounded-xl border border-[#201c17] bg-[#121315] px-3 py-2.5 text-left text-sm font-medium text-slate-200"
+            >
+              <Building2 className="h-4 w-4 text-[#d9b76d]" />
+              For Vendors
+            </button>
 
-          {event && (
-
-            <div className="p-3 mb-2 rounded-xl bg-[#0e1314]/90 border border-slate-800 flex items-center justify-between">
-
-              <div>
-
-                <p className="text-xs text-slate-400">
-                  Current Active Event
-                </p>
-
-                <p className="text-sm font-bold text-white">
-                  {event.eventType} ({event.guestCount} Guests)
-                </p>
-
-              </div>
-
-              <div className="text-right">
-
-                <p className="text-xs text-slate-400">
-                  Budget
-                </p>
-
-                <p className="text-sm font-extrabold text-amber-400">
-                  {formatINR(event.totalBudget)}
-                </p>
-
-              </div>
-
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button type="button" onClick={onSaveEvent} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#2e3838] bg-[#101416] px-3 py-2 text-xs font-semibold text-slate-200">
+                <Save className="h-3.5 w-3.5 text-[#ddb770]" />
+                {hasSavedChanges ? 'Save' : 'Saved'}
+              </button>
+              <button type="button" onClick={onResetEvent} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#2e3838] bg-[#101416] px-3 py-2 text-xs font-semibold text-slate-200">
+                <RotateCcw className="h-3.5 w-3.5 text-[#d9b5a1]" />
+                Reset
+              </button>
             </div>
-
-          )}
-
-          <div className="grid grid-cols-1 gap-1">
-
-            <button
-              onClick={() => scrollTo('hero-section')}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-amber-200 hover:bg-slate-800"
-            >
-              🏠 Home & Overview
-            </button>
-
-            {event && (
-              <>
-
-                <button
-                  onClick={() => scrollTo('dashboard-section')}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-amber-400 bg-amber-500/10 hover:bg-amber-500/20"
-                >
-                  📊 Budget Dashboard & Engine
-                </button>
-
-                <button
-                  onClick={() => scrollTo('planners-section')}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-amber-200 hover:bg-slate-800"
-                >
-                  🍽️ Category Planners (Food, Decor, DJ...)
-                </button>
-
-                <button
-                  onClick={() => scrollTo('vendors-section')}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-amber-200 hover:bg-slate-800"
-                >
-                  📍 Ahmedabad Local Vendors & Quotes
-                </button>
-
-              </>
-            )}
-
           </div>
-
-          <div className="pt-3 border-t border-slate-800 flex flex-col gap-2">
-
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onOpenCreateModal();
-              }}
-              className="w-full py-2.5 rounded-xl text-center text-sm font-bold text-[#080a0b] bg-gradient-to-r from-[#c99a42] via-[#f0d58a] to-[#c99a42] shadow-md shadow-amber-900/25"
-            >
-
-              {event ? '+ CREATE NEW EVENT' : 'PLAN MY EVENT'}
-
-            </button>
-
-            {event && (
-
-              <div className="grid grid-cols-2 gap-2">
-
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onSaveEvent();
-                  }}
-                  className="py-2 rounded-xl text-xs font-semibold text-slate-200 bg-[#111718] border border-slate-700 text-center"
-                >
-                  Save Local Plan
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onResetEvent();
-                  }}
-                  className="py-2 rounded-xl text-xs font-semibold text-rose-300 bg-rose-950/40 border border-rose-800/40 text-center"
-                >
-                  Reset All
-                </button>
-
-              </div>
-
-            )}
-
-          </div>
-
         </div>
-
       )}
-
     </header>
   );
 };

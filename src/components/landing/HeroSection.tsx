@@ -79,31 +79,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Buttons */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-
-            {/* Plan Event */}
             <button
               onClick={onOpenCreateModal}
               className="group inline-flex min-w-[235px] items-center justify-center gap-3 rounded-2xl border border-[#ad7d27] bg-gradient-to-r from-[#b7832b] via-[#e0bd69] to-[#b7832b] px-7 py-4 text-sm font-black tracking-wide text-[#211b15] shadow-xl shadow-[#b7832b]/25 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#b7832b]/30"
             >
-              
               PLAN MY EVENT
-
               <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-            
             </button>
 
-            {/* Demo Event */}
             <button
               onClick={onLoadDemo}
-              className="group inline-flex min-w-[280px] items-center justify-center gap-3 rounded-2xl border-2 border-[#9b7228] bg-[#211b15] px-7 py-4 text-sm font-black tracking-wide text-[#f7e7bd] shadow-xl shadow-[#211b15]/20 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:bg-[#30271f] hover:text-white hover:shadow-2xl"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#9b7228]/50 bg-[#211b15] px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-[#f7e7bd] transition hover:border-[#d6b36a] hover:bg-[#2d241d]"
             >
-              
-              <Zap className="h-5 w-5 text-[#e0bd69]" />
-              
-              LOAD DEMO EVENT (₹50k Birthday)
-
+              <Zap className="h-4 w-4 text-[#e0bd69]" />
+              Try Demo
             </button>
-
           </div>
 
           {/* Active Event */}

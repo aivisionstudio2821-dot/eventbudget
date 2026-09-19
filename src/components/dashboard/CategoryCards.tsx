@@ -19,11 +19,13 @@ import { calculateCategoryTotals } from '../../utils/budgetCalculations';
 interface CategoryCardsProps {
   event: EventState;
   onSelectCategory: (key: CategoryKey) => void;
+  onFixBudget?: () => void;
 }
 
 export const CategoryCards: React.FC<CategoryCardsProps> = ({
   event,
   onSelectCategory,
+  onFixBudget,
 }) => {
   const categoryTotals = calculateCategoryTotals(event);
 
@@ -296,21 +298,36 @@ export const CategoryCards: React.FC<CategoryCardsProps> = ({
               <div className="relative mt-5">
 
                 {!isBuffer ? (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onSelectCategory(cat.key)
-                    }
-                    className="group/btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#241c13] px-3 py-3 text-[10px] font-black uppercase tracking-[0.08em] text-[#f1d9aa] shadow-[0_8px_18px_rgba(44,32,18,0.16)] transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-[0_12px_24px_rgba(44,32,18,0.22)] active:translate-y-0"
-                  >
-                    <span>
-                      Customize{' '}
-                      {cat.name
-                        .split(' ')[0]}
-                    </span>
+                  <>
+                    {isOver && onFixBudget && (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onFixBudget();
+                        }}
+                        className="mb-2 w-full rounded-xl border border-[#d9a29a] bg-[#fff3f1] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#a64d45] transition hover:bg-[#ffe9e5]"
+                      >
+                        Fix Budget
+                      </button>
+                    )}
 
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onSelectCategory(cat.key)
+                      }
+                      className="group/btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#241c13] px-3 py-3 text-[10px] font-black uppercase tracking-[0.08em] text-[#f1d9aa] shadow-[0_8px_18px_rgba(44,32,18,0.16)] transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-[0_12px_24px_rgba(44,32,18,0.22)] active:translate-y-0"
+                    >
+                      <span>
+                        Customize{' '}
+                        {cat.name
+                          .split(' ')[0]}
+                      </span>
+
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
+                    </button>
+                  </>
                 ) : (
                   <div className="rounded-xl border border-[#dac9ad] bg-[#efe2ce]/65 px-3 py-3 text-center">
                     <div className="flex items-center justify-center gap-1.5 text-[10px] font-black text-[#765e3d]">
