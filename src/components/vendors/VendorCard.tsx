@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Star,
   FileText,
+  Sparkles,
 } from 'lucide-react';
 
 import { Vendor, EventState } from '../../types';
@@ -25,6 +26,9 @@ export const VendorCard: React.FC<VendorCardProps> = ({
   const categoryBudget = event
     ? event.allocations[vendor.categoryKey] || 0
     : 0;
+
+  const primaryPackage = vendor.packages?.[0];
+  const isSampleVendor = vendor.isSample || vendor.status === 'demo';
 
   const generateWhatsAppUrl = () => {
     if (!event) {
@@ -91,6 +95,13 @@ Please share your quotation and availability.`;
 
           </div>
 
+          {isSampleVendor && (
+            <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-[#d7b67a]/30 bg-[#f3d18a]/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-[#9a743d]">
+              <Sparkles className="h-3 w-3" />
+              Demo Listing
+            </div>
+          )}
+
           <p className="mt-1 flex items-center gap-1 text-xs text-[#82796d]">
             <MapPin className="h-3 w-3 shrink-0 text-[#b78843]" />
             <span>
@@ -121,7 +132,25 @@ Please share your quotation and availability.`;
 
         </div>
 
-        {/* CATEGORY BUDGET */}
+        {primaryPackage && (
+          <div className="mb-4 rounded-xl border border-[#dac5a3] bg-[#f7efe1] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-[#88765e]">
+                Starting at
+              </span>
+              <strong className="text-sm font-black text-[#856134]">
+                {formatINR(vendor.startingPrice ?? primaryPackage.price)}
+              </strong>
+            </div>
+
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#5f4d3a]">
+              {primaryPackage.name}
+            </p>
+            <p className="mt-1 text-[10px] leading-relaxed text-[#928574]">
+              {primaryPackage.description}
+            </p>
+          </div>
+        )}
 
         {event && categoryBudget > 0 && (
           <div className="mb-4 rounded-xl border border-[#dac5a3] bg-[#f7efe1] p-3">

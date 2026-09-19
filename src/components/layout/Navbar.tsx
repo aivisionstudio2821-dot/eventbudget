@@ -18,23 +18,29 @@ import { calculateTotalPlanned } from '../../utils/budgetCalculations';
 interface NavbarProps {
   event: EventState | null;
   onOpenCreateModal: () => void;
+  onOpenVendorOnboarding: () => void;
   onLoadDemo: () => void;
   onResetEvent: () => void;
   onSaveEvent: () => void;
   activeSection: string;
   setActiveSection: (section: string) => void;
   hasSavedChanges: boolean;
+  isProActive: boolean;
+  onUpgradeClick: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   event,
   onOpenCreateModal,
+  onOpenVendorOnboarding,
   onLoadDemo,
   onResetEvent,
   onSaveEvent,
   activeSection,
   setActiveSection,
   hasSavedChanges,
+  isProActive,
+  onUpgradeClick,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -95,6 +101,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
                   MVP
                 </span>
+
+                {isProActive && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-[#f3d18a]/40 bg-[#f3d18a]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-[#f8dc96]">
+                    <Sparkles className="h-2.5 w-2.5" />
+                    PRO
+                  </span>
+                )}
 
               </div>
 
@@ -190,7 +203,30 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* DEMO */}
+            <button
+              type="button"
+              onClick={onOpenVendorOnboarding}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#f0e6d4] bg-[#1b1712] border border-[#d1a85e]/40 hover:bg-[#231d17] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="List your business on EventBudget"
+            >
+              <Store className="w-3.5 h-3.5 text-[#d5b56b]" />
+              <span>FOR VENDORS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={isProActive ? undefined : onUpgradeClick}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
+                isProActive
+                  ? 'border border-[#f3d18a]/40 bg-[#f3d18a]/10 text-[#f8dc96]'
+                  : 'border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:border-amber-400'
+              }`}
+              title={isProActive ? 'EventBudget PRO is active for this session' : 'Upgrade to EventBudget PRO'}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{isProActive ? 'PRO ACTIVE' : 'UPGRADE TO PRO'}</span>
+            </button>
+
             <button
               onClick={onLoadDemo}
               className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"

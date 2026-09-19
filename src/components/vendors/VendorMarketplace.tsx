@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import {
   Store,
   Search,
-  Filter,
   ShieldAlert,
   Sparkles,
-  MapPin,
+  Lock,
+  Crown,
   FileText,
-  CheckCircle2
 } from 'lucide-react';
 import { Vendor, VendorCategory, EventState, VendorQuote } from '../../types';
-import { DEMO_VENDORS } from '../../data/demoVendors';
 import { VendorCard } from './VendorCard';
 import { QuoteManagerModal } from './QuoteManagerModal';
 import { QuoteComparison } from './QuoteComparison';
-import { formatINR } from '../../utils/currencyFormatter';
+import { getApprovedMarketplaceVendors } from './vendorPrototype';
 
 interface VendorMarketplaceProps {
   event: EventState | null;
+  isProActive: boolean;
+  onUpgradeClick: () => void;
   onSaveQuote: (quote: VendorQuote) => void;
   onApplyQuote: (quote: VendorQuote) => void;
   onRemoveQuote: (quoteId: string) => void;
@@ -36,6 +36,8 @@ const CATEGORY_FILTERS: { id: VendorCategory; label: string }[] = [
 
 export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
   event,
+  isProActive,
+  onUpgradeClick,
   onSaveQuote,
   onApplyQuote,
   onRemoveQuote,
@@ -47,13 +49,15 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'directory' | 'quotes'>('directory');
 
-  const filteredVendors = DEMO_VENDORS.filter((vendor) => {
+  const marketplaceVendors = getApprovedMarketplaceVendors();
+
+  const filteredVendors = marketplaceVendors.filter((vendor) => {
     const matchesCategory = selectedCategory === 'ALL' || vendor.category === selectedCategory;
     const matchesSearch =
       vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.area.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vendor.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      vendor.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return matchesCategory && matchesSearch;
   });
@@ -64,9 +68,45 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
   };
 
   const handleOpenCustomQuote = () => {
+    if (!isProActive) {
+      onUpgradeClick();
+      return;
+    }
+
     setSelectedVendorForQuote(null);
     setIsQuoteModalOpen(true);
   };
+
+  const handleVendorAction = (vendor: Vendor) => {
+    if (!isProActive) {
+      onUpgradeClick();
+      return;
+    }
+
+    handleOpenQuoteModal(vendor);
+  };
+
+  const renderUpgradeGate = (title: string, description: string) => (
+    <div className="rounded-[28px] border border-[#d9b770]/30 bg-gradient-to-br from-[#18130e] via-[#1d1711] to-[#110d0a] p-7 text-center shadow-[0_18px_50px_rgba(9,7,5,0.35)]">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#d9b770]/30 bg-[#f3d18a]/10 text-[#f3d18a]">
+        <Lock className="h-8 w-8" />
+      </div>
+      <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#d9b770]/25 bg-[#d9b770]/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#f3d18a]">
+        <Crown className="h-3.5 w-3.5" />
+        EventBudget PRO
+      </div>
+      <h3 className="text-2xl font-black text-[#fff8ef]">{title}</h3>
+      <p className="mx-auto mt-2 max-w-md text-sm text-[#d5c4a7]">{description}</p>
+      <button
+        type="button"
+        onClick={onUpgradeClick}
+        className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#c89542] via-[#f0d890] to-[#c89542] px-5 py-3 text-sm font-black text-[#1b140e] shadow-[0_12px_30px_rgba(195,147,76,0.33)] transition hover:brightness-110 active:scale-[0.99]"
+      >
+        <Sparkles className="h-4 w-4" />
+        Unlock EventBudget PRO
+      </button>
+    </div>
+  );
 
   return (
     <section id="vendors-section" className="py-12 sm:py-16 space-y-8">
@@ -95,10 +135,10 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            🏢 Local Directory ({DEMO_VENDORS.length})
+            🏢 Local Directory ({marketplaceVendors.length})
           </button>
           <button
-            onClick={() => setViewMode('quotes')}
+            onClick={() => (isProActive ? setViewMode('quotes') : onUpgradeClick())}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               viewMode === 'quotes'
                 ? 'bg-purple-600 text-white shadow'
@@ -106,7 +146,10 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Compare Quotes ({event?.quotes?.length || 0})</span>
+            <span className="flex items-center gap-2">
+              {isProActive ? `Compare Quotes (${event?.quotes?.length || 0})` : 'Compare Quotes'}
+              {!isProActive && <Lock className="h-3.5 w-3.5" />}
+            </span>
           </button>
         </div>
       </div>
@@ -119,8 +162,22 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
         </p>
       </div>
 
+      {!isProActive && viewMode === 'directory' && (
+        renderUpgradeGate(
+          'Vendor marketplace is a PRO feature',
+          'Unlock real vendor discovery, quote capture, and quote comparisons to plan with local service providers.'
+        )
+      )}
+
+      {!isProActive && viewMode === 'quotes' && (
+        renderUpgradeGate(
+          'Quote comparison is a PRO feature',
+          'Track received vendor bids, compare pricing, and apply the best quote to your event plan.'
+        )
+      )}
+
       {/* View Mode 1: Directory */}
-      {viewMode === 'directory' && (
+      {isProActive && viewMode === 'directory' && (
         <div className="space-y-6">
           
           {/* Search & Category Filter Chips */}
@@ -172,7 +229,7 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
                 key={vendor.id}
                 vendor={vendor}
                 event={event}
-                onOpenQuoteModal={handleOpenQuoteModal}
+                onOpenQuoteModal={handleVendorAction}
               />
             ))}
           </div>
@@ -188,7 +245,7 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
       )}
 
       {/* View Mode 2: Quote Comparison & Application */}
-      {viewMode === 'quotes' && event && (
+      {isProActive && viewMode === 'quotes' && event && (
         <div className="space-y-6">
           <div className="flex justify-end">
             <button
@@ -210,7 +267,7 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
 
       {/* Quote Manager Modal */}
       <QuoteManagerModal
-        isOpen={isQuoteModalOpen}
+        isOpen={isProActive && isQuoteModalOpen}
         onClose={() => setIsQuoteModalOpen(false)}
         vendor={selectedVendorForQuote}
         onSaveQuote={onSaveQuote}

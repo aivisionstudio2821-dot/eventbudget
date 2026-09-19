@@ -43,6 +43,12 @@ import { VenuePlanner } from './components/planners/VenuePlanner';
 import { MiscellaneousPlanner } from './components/planners/MiscellaneousPlanner';
 
 import { VendorMarketplace } from './components/vendors/VendorMarketplace';
+import { ProUpgradeModal } from './components/vendors/ProUpgradeModal';
+import { VendorOnboardingModal } from './components/vendors/VendorOnboardingModal';
+import {
+  getProSessionValue,
+  setProSessionValue,
+} from './components/vendors/proAccess';
 
 import {
   ToastContainer,
@@ -520,6 +526,17 @@ export const App: React.FC = () => {
   const [toasts, setToasts] =
     useState<ToastMessage[]>([]);
 
+  const [isProActive, setIsProActive] =
+    useState<boolean>(() =>
+      getProSessionValue()
+    );
+
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] =
+    useState(false);
+
+  const [isVendorOnboardingOpen, setIsVendorOnboardingOpen] =
+    useState(false);
+
   const showToast = (
     type: 'success' | 'warning' | 'info',
     title: string,
@@ -555,6 +572,26 @@ export const App: React.FC = () => {
       prev.filter(
         (toast) => toast.id !== id
       )
+    );
+  };
+
+  const handleOpenUpgradeModal = () => {
+    setIsUpgradeModalOpen(true);
+  };
+
+  const handleCloseUpgradeModal = () => {
+    setIsUpgradeModalOpen(false);
+  };
+
+  const handleActivateDeveloperMode = () => {
+    setProSessionValue(true);
+    setIsProActive(true);
+    setIsUpgradeModalOpen(false);
+
+    showToast(
+      'success',
+      '✅ EventBudget PRO unlocked',
+      'This browser session now includes the vendor marketplace and quote tools.'
     );
   };
 
@@ -1510,6 +1547,11 @@ export const App: React.FC = () => {
             true
           )
         }
+        onOpenVendorOnboarding={() =>
+          setIsVendorOnboardingOpen(
+            true
+          )
+        }
         onLoadDemo={
           handleLoadDemo
         }
@@ -1527,6 +1569,10 @@ export const App: React.FC = () => {
         }
         hasSavedChanges={
           hasSavedChanges
+        }
+        isProActive={isProActive}
+        onUpgradeClick={
+          handleOpenUpgradeModal
         }
       />
 
@@ -1761,6 +1807,10 @@ export const App: React.FC = () => {
 
             <VendorMarketplace
               event={event}
+              isProActive={isProActive}
+              onUpgradeClick={
+                handleOpenUpgradeModal
+              }
               onSaveQuote={
                 handleSaveQuote
               }
@@ -1816,6 +1866,23 @@ export const App: React.FC = () => {
       />
 
       <TeamSection />
+
+      <ProUpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={handleCloseUpgradeModal}
+        onActivateDeveloperMode={
+          handleActivateDeveloperMode
+        }
+      />
+
+      <VendorOnboardingModal
+        isOpen={isVendorOnboardingOpen}
+        onClose={() =>
+          setIsVendorOnboardingOpen(
+            false
+          )
+        }
+      />
     </div>
   );
 };
