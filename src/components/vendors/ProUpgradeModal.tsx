@@ -91,7 +91,7 @@ export const ProUpgradeModal: React.FC<ProUpgradeModalProps> = ({
               onClick={onActivateDeveloperMode}
               className="flex-1 rounded-2xl bg-gradient-to-r from-[#c89542] via-[#f0d890] to-[#c89542] px-4 py-3 text-sm font-black text-[#1b140e] shadow-[0_10px_30px_rgba(192,144,67,0.35)] transition hover:brightness-110 active:scale-[0.99]"
             >
-              Try PRO (Developer Mode)
+              Unlock PRO Demo
             </button>
 
             <button
