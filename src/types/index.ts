@@ -136,6 +136,22 @@ export type VendorCategory =
   | 'PHOTOGRAPHY'
   | 'VENUE';
 
+export type VendorStatus = 'demo' | 'approved' | 'pending' | 'rejected';
+export type VendorType = 'demo' | 'submitted' | 'confirmed';
+
+export interface VendorPackage {
+  id?: string;
+  name: string;
+  price: number;
+  description: string;
+  includes?: string[];
+  excludes?: string[];
+  guestCapacity?: string;
+  duration?: string;
+  priceConfirmedDate?: string | null;
+  priceValidUntil?: string | null;
+}
+
 export interface Vendor {
   id: string;
   name: string;
@@ -149,6 +165,18 @@ export interface Vendor {
   tags: string[];
   verified?: boolean;
   rating?: number;
+  startingPrice?: number;
+  packages?: VendorPackage[];
+  status?: VendorStatus;
+  vendorType?: VendorType;
+  isSample?: boolean;
+  source?: 'demo' | 'submitted';
+  isVisible?: boolean;
+  priceConfirmed?: boolean;
+  priceConfirmedDate?: string | null;
+  priceValidUntil?: string | null;
+  lastUpdated?: string | null;
+  pricingNote?: string;
 }
 
 export interface VendorQuote {
@@ -161,6 +189,8 @@ export interface VendorQuote {
   notes?: string;
   date: string;
   applied: boolean;
+  packageName?: string;
+  quoteValidUntil?: string | null;
 }
 
 export interface HealthScoreBreakdown {

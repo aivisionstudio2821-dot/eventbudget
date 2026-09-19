@@ -13,8 +13,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '918401010760',
     description: 'High-energy DJ setups, club sound, moving beam lights, Bollywood, EDM & Garba specialist with 8+ years experience.',
     tags: ['DJ Setup', 'Club Sound', 'Bollywood EDM', 'Moving Heads'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 18000,
+    packages: [
+      { name: 'DJ Setup', price: 18000, description: 'Family event DJ with 2 speakers, lighting, and setup support.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_dj_nikhil',
@@ -27,8 +34,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919537968007',
     description: 'Premium event DJ with JBL concert sound, intelligent truss lighting and custom visual mixing for birthdays & weddings.',
     tags: ['DJ & Sound', 'Truss Lighting', 'Birthday Specials', 'Live Visuals'],
-    verified: true,
-    rating: 4.8
+    verified: false,
+    rating: 4.8,
+    startingPrice: 22000,
+    packages: [
+      { name: 'Premium DJ Night', price: 22000, description: 'Concert-level sound, moving lights, and DJ support for evening events.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
 
   // CATERING
@@ -43,8 +57,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919099106089',
     description: 'Authentic Gujarati, North Indian & Continental catering with immaculate hygiene standards and live counter setups.',
     tags: ['Gujarati Thali', 'North Indian', 'Live Counters', 'Corporate & Weddings'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 3200,
+    packages: [
+      { name: 'Gujarati & Punjabi Buffet', price: 3200, description: 'Per plate buffet for small to medium guest events.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_shreenathji_caterers',
@@ -57,8 +78,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919825941009',
     description: 'Renowned wedding & party caterers in Ahmedabad known for exquisite sweet buffets, live chaat and premium Punjabi dishes.',
     tags: ['Wedding Banquets', 'Live Chaat', 'Dessert Buffets', 'Pure Veg'],
-    verified: true,
-    rating: 4.8
+    verified: false,
+    rating: 4.8,
+    startingPrice: 4200,
+    packages: [
+      { name: 'Wedding Buffet Package', price: 4200, description: 'Premium veg buffet with dessert counter and live items.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
 
   // EVENT MANAGEMENT
@@ -73,8 +101,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '917984506197',
     description: 'End-to-end event planning, stage fabrication, permissions, artist booking and guest hospitality management.',
     tags: ['Full Event Planning', 'Artist Booking', 'Logistics', 'Decor & Sound'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 25000,
+    packages: [
+      { name: 'Full Event Management', price: 25000, description: 'Planning, vendor coordination, and on-ground coordination for a mid-size event.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_refuge_events',
@@ -87,8 +122,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '917874107000',
     description: 'Boutique experiential event management agency specializing in luxury birthdays, anniversaries and corporate gala evenings.',
     tags: ['Luxury Birthdays', 'Theme Parties', 'Sound & Stage', 'Hospitality'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 35000,
+    packages: [
+      { name: 'Luxury Birthday Production', price: 35000, description: 'Concept styling, guest flow coordination, and on-site execution support.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
 
   // DECORATION
@@ -103,8 +145,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919898012345',
     description: 'Creative balloon installations, neon aesthetic photo zones, floral stages and customized birthday backdrops.',
     tags: ['Theme Backdrops', 'Floral Setup', 'Neon Signs', 'Balloon Art'],
-    verified: true,
-    rating: 4.8
+    verified: false,
+    rating: 4.8,
+    startingPrice: 15000,
+    packages: [
+      { name: 'Floral & Balloon Setup', price: 15000, description: 'Backdrop styling, neon elements, and stage styling for celebrations.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_shree_ram_decor',
@@ -117,8 +166,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919824056789',
     description: 'Affordable society hall & banquet decoration with LED fairy lights, balloon arches and royal entrance gates.',
     tags: ['Budget Friendly', 'Society Hall Setup', 'LED Lighting', 'Entry Gate'],
-    verified: true,
-    rating: 4.7
+    verified: false,
+    rating: 4.7,
+    startingPrice: 12000,
+    packages: [
+      { name: 'Stage & Entrance Decor', price: 12000, description: 'LED lighting, arch design, and venue styling for lifestyle events.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
 
   // PHOTOGRAPHY
@@ -133,8 +189,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919428011223',
     description: 'Award-winning candid photography team, 4K drone cinematography and same-day Instagram viral reel creation.',
     tags: ['Candid Photography', '4K Drone', 'Reels Creator', 'Photo Albums'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 28000,
+    packages: [
+      { name: 'Candid Coverage + Reels', price: 28000, description: 'Photography, cinematic edits, and highlight reels for the event.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_pixel_craft',
@@ -147,8 +210,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919712398765',
     description: 'Instant 360 photo booth rental, traditional coverage and digital memories for all celebratory milestones.',
     tags: ['360 Photo Booth', 'Traditional Video', 'Quick Delivery', 'Digital Album'],
-    verified: true,
-    rating: 4.8
+    verified: false,
+    rating: 4.8,
+    startingPrice: 18000,
+    packages: [
+      { name: 'Photo Booth + Coverage', price: 18000, description: '360 booth setup, photography coverage, and instant sharing support.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
 
   // VENUE
@@ -163,8 +233,15 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919909012399',
     description: 'Air-conditioned pillarless banquet halls and lush party lawns with ample valet parking space.',
     tags: ['AC Banquet', 'Valet Parking', 'Party Lawn', 'Power Backup'],
-    verified: true,
-    rating: 4.9
+    verified: false,
+    rating: 4.9,
+    startingPrice: 60000,
+    packages: [
+      { name: 'Banquet Lawn Package', price: 60000, description: 'Private venue use with AC spaces, stage area, and parking support.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   },
   {
     id: 'vendor_shivalik_party_hall',
@@ -177,7 +254,14 @@ export const DEMO_VENDORS: Vendor[] = [
     whatsapp: '919879034567',
     description: 'Central Ahmedabad party hall equipped with sound acoustic panels, basic stage and dining zone.',
     tags: ['Centrally Located', 'Affordable', 'Acoustic Hall', 'Dining Area'],
-    verified: true,
-    rating: 4.7
+    verified: false,
+    rating: 4.7,
+    startingPrice: 42000,
+    packages: [
+      { name: 'Community Hall Booking', price: 42000, description: 'Venue access with sound support and dining arrangement for smaller events.' },
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
   }
 ];
