@@ -223,7 +223,7 @@ export const FoodMenuBuilder: React.FC<FoodMenuBuilderProps> = ({
           </p>
 
           <p className="mt-0.5 text-[11px] leading-relaxed text-[#80705c]">
-            These values are prototype estimates for early event planning.
+            These values are early planning estimates for budgeting.
             Actual vendor quotations may vary depending on date, location,
             quantity, menu customization and service requirements.
           </p>

@@ -511,7 +511,7 @@ export const CreateEventModal: React.FC<
                 </p>
               ) : (
                 <p className="mt-2 text-[11px] text-[#918572]">
-                  Current prototype pricing is focused on Ahmedabad.
+                  Current event planning pricing is focused on Ahmedabad.
                 </p>
               )}
             </div>

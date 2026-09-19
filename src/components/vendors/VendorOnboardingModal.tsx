@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   X,
   CheckCircle2,
   Store,
   User,
-  BellRing,
   Mail,
   Smartphone,
   Globe,
@@ -56,9 +55,6 @@ interface VendorOnboardingModalProps {
 export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ isOpen, onClose }) => {
   const [form, setForm] = useState(createEmptyForm());
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isReviewVisible, setIsReviewVisible] = useState(false);
-
-  const pendingVendors = useMemo(() => getStoredVendorApplications().filter((entry) => entry.status === 'pending'), []);
 
   if (!isOpen) return null;
 
@@ -86,19 +82,7 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
     const existing = getStoredVendorApplications();
     saveVendorApplications([submission, ...existing]);
     setIsSubmitted(true);
-    setIsReviewVisible(true);
     setForm(createEmptyForm());
-  };
-
-  const handleToggleReview = () => {
-    setIsReviewVisible((prev) => !prev);
-  };
-
-  const handleDecision = (vendorId: string, status: 'approved' | 'rejected') => {
-    const all = getStoredVendorApplications();
-    const updated = all.map((entry) => (entry.id === vendorId ? { ...entry, status } : entry));
-    saveVendorApplications(updated);
-    setIsReviewVisible((prev) => !prev);
   };
 
   return (
@@ -313,71 +297,33 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
                 Submit for Review
               </button>
             </div>
+
+            <p className="text-[11px] text-[#d8c5a2]">
+              During this pilot, submission data is stored on this device.
+            </p>
           </form>
 
           <aside className="space-y-4 rounded-[24px] border border-[#2d241d] bg-[#17120f] p-4">
             <div className="rounded-2xl border border-[#d9b770]/20 bg-[#f6e9cd]/5 p-4">
               <div className="mb-3 flex items-center gap-2 text-[#f0ce7e]">
-                <BellRing className="h-4 w-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.18em]">Prototype</span>
+                <ShieldCheck className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-[0.18em]">Vendor Pilot</span>
               </div>
               <p className="text-sm text-[#f4ebdb]">
-                This is a local prototype only. Submissions are stored in the browser and are not sent to a live backend.
+                EventBudget is currently onboarding selected vendors for its Ahmedabad pilot. Submitted information is reviewed before a listing is published.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#2d241d] bg-[#100d0b] p-4">
-              <div className="mb-3 flex items-center gap-2 text-[#f0ce7e]">
-                <ShieldCheck className="h-4 w-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.18em]">Admin prototype</span>
+            <div className="space-y-2 rounded-2xl border border-[#2d241d] bg-[#100d0b] p-4 text-sm text-[#eadcc3]">
+              <div className="mb-2 flex items-center gap-2 text-[#f0ce7e]">
+                <Sparkles className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-[0.18em]">Why list on EventBudget?</span>
               </div>
-
-              <button
-                type="button"
-                onClick={handleToggleReview}
-                className="w-full rounded-xl border border-[#d7c39e] bg-[#f9f4ee] px-3 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#241d15]"
-              >
-                {isReviewVisible ? 'Hide Pending Review' : 'View Pending Review'}
-              </button>
-
-              {isReviewVisible && (
-                <div className="mt-3 space-y-3">
-                  {pendingVendors.length === 0 ? (
-                    <p className="text-xs text-[#d7c39e]">No pending vendor applications yet.</p>
-                  ) : (
-                    pendingVendors.map((vendor) => (
-                      <div key={vendor.id} className="rounded-xl border border-[#d7c39e]/25 bg-[#201a14] p-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <div>
-                            <p className="text-sm font-black text-[#fff5d6]">{vendor.businessName}</p>
-                            <p className="text-[10px] uppercase tracking-[0.15em] text-[#d0a864]">{vendor.category}</p>
-                          </div>
-                          <span className="rounded-full border border-[#f0ce7e]/30 bg-[#f0ce7e]/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-[#f3d18a]">
-                            Pending Review
-                          </span>
-                        </div>
-
-                        <div className="mt-2 flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleDecision(vendor.id, 'approved')}
-                            className="flex-1 rounded-lg bg-[#d9b770]/20 px-2 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#f5d999]"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDecision(vendor.id, 'rejected')}
-                            className="flex-1 rounded-lg bg-[#3a2a22] px-2 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#f5c4a1]"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+              <p className="flex items-center gap-2"><User className="h-4 w-4 text-[#d0a864]" /> Free pilot listing</p>
+              <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#d0a864]" /> Direct customer enquiries</p>
+              <p className="flex items-center gap-2"><CircleDollarSign className="h-4 w-4 text-[#d0a864]" /> Package visibility</p>
+              <p className="flex items-center gap-2"><Smartphone className="h-4 w-4 text-[#d0a864]" /> Quote requests</p>
+              <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#d0a864]" /> Review before publishing</p>
             </div>
 
             <div className="space-y-2 rounded-2xl border border-[#2d241d] bg-[#100d0b] p-4 text-sm text-[#eadcc3]">
@@ -386,7 +332,6 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
               <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#d0a864]" /> Email and pricing details</p>
               <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#d0a864]" /> Instagram / website link</p>
               <p className="flex items-center gap-2"><CircleDollarSign className="h-4 w-4 text-[#d0a864]" /> Package pricing and start price</p>
-              <p className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-[#d0a864]" /> Review before appearance</p>
             </div>
           </aside>
         </div>
