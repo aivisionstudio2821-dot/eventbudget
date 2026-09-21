@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Store,
   Search,
@@ -12,7 +12,7 @@ import { Vendor, VendorCategory, EventState, VendorQuote } from '../../types';
 import { VendorCard } from './VendorCard';
 import { QuoteManagerModal } from './QuoteManagerModal';
 import { QuoteComparison } from './QuoteComparison';
-import { getApprovedMarketplaceVendors } from './vendorPrototype';
+import { getApprovedMarketplaceVendors, getDemoVendors } from '../../services/vendorRepository';
 
 interface VendorMarketplaceProps {
   event: EventState | null;
@@ -48,8 +48,23 @@ export const VendorMarketplace: React.FC<VendorMarketplaceProps> = ({
   const [selectedVendorForQuote, setSelectedVendorForQuote] = useState<Vendor | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'directory' | 'quotes'>('directory');
+  const [marketplaceVendors, setMarketplaceVendors] = useState(getDemoVendors);
 
-  const marketplaceVendors = getApprovedMarketplaceVendors();
+  useEffect(() => {
+    let isMounted = true;
+
+    getApprovedMarketplaceVendors()
+      .then((vendors) => {
+        if (isMounted) setMarketplaceVendors(vendors);
+      })
+      .catch((error) => {
+        console.error('Vendor marketplace is using demo listings:', error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredVendors = marketplaceVendors.filter((vendor) => {
     const matchesCategory = selectedCategory === 'ALL' || vendor.category === selectedCategory;

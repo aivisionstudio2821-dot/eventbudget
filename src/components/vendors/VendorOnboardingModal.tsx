@@ -14,9 +14,8 @@ import {
 import { VendorCategory } from '../../types';
 import {
   VendorApplicationInput,
-  getStoredVendorApplications,
-  saveVendorApplications,
-} from './vendorPrototype';
+  submitVendorApplication,
+} from '../../services/vendorRepository';
 
 const categoryOptions: Exclude<VendorCategory, 'ALL'>[] = [
   'DJ',
@@ -55,6 +54,8 @@ interface VendorOnboardingModalProps {
 export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ isOpen, onClose }) => {
   const [form, setForm] = useState(createEmptyForm());
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -62,27 +63,32 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!form.businessName.trim() || !form.ownerName.trim() || !form.description.trim() || !form.isAccurate) {
       return;
     }
 
-    const submission: VendorApplicationInput = {
-      id: `vendor_app_${Date.now()}`,
-      ...form,
-      startingPrice: Number(form.startingPrice) || 0,
-      packagePrice: Number(form.packagePrice) || 0,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      source: 'submitted',
-    };
+    setSubmissionError('');
+    setIsSubmitting(true);
 
-    const existing = getStoredVendorApplications();
-    saveVendorApplications([submission, ...existing]);
-    setIsSubmitted(true);
-    setForm(createEmptyForm());
+    try {
+      await submitVendorApplication({
+        ...form,
+        startingPrice: Number(form.startingPrice) || 0,
+        packagePrice: Number(form.packagePrice) || 0,
+      });
+
+      setIsSubmitted(true);
+      setForm(createEmptyForm());
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Vendor application could not be submitted.';
+      setSubmissionError(message);
+      console.error(message, error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -115,8 +121,14 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
               <div className="rounded-2xl border border-[#d0a864]/25 bg-[#f5e7bf]/10 p-4 text-sm text-[#f7df9e]">
                 <div className="flex items-center gap-2 font-bold">
                   <CheckCircle2 className="h-4 w-4" />
-                  Application submitted. Our team will review your business before it appears on EventBudget.
+                  Application submitted. EventBudget will review your listing before it is published.
                 </div>
+              </div>
+            )}
+
+            {submissionError && (
+              <div className="rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200">
+                {submissionError}
               </div>
             )}
 
@@ -292,14 +304,15 @@ export const VendorOnboardingModal: React.FC<VendorOnboardingModalProps> = ({ is
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="rounded-xl bg-gradient-to-r from-[#c89542] via-[#f0d890] to-[#c89542] px-5 py-2.5 text-sm font-black text-[#1b140e] shadow-[0_8px_22px_rgba(192,144,67,0.3)]"
               >
-                Submit for Review
+                {isSubmitting ? 'Submitting...' : 'Submit for Review'}
               </button>
             </div>
 
             <p className="text-[11px] text-[#d8c5a2]">
-              During this pilot, submission data is stored on this device.
+              Your application will be reviewed before it is published.
             </p>
           </form>
 
