@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "cd \"event budget/eventbudget-eventbudget-pro\" && tsc -b --noCheck && vite build"
+    "build": "tsc -b --noCheck && vite build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
