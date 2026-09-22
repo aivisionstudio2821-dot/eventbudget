@@ -1,4 +1,7 @@
 {
+  "installCommand": "npm install --include=dev",
+  "buildCommand": "npm run build",
+  "outputDirectory": "event budget/eventbudget-eventbudget-pro/dist",
   "rewrites": [
     {
       "source": "/((?!.*\\.).*)",
