@@ -263,7 +263,7 @@ export const DEMO_VENDORS: Vendor[] = [
     status: 'demo',
     isSample: true,
     source: 'demo',
-  }
+  },
     {
     id: 'vendor_mexican_pizza_parlour',
     name: 'Mexican Pizza Parlour',
