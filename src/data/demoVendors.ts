@@ -264,4 +264,29 @@ export const DEMO_VENDORS: Vendor[] = [
     isSample: true,
     source: 'demo',
   }
+    {
+    id: 'vendor_mexican_pizza_parlour',
+    name: 'Mexican Pizza Parlour',
+    category: 'CATERING',
+    categoryKey: 'food',
+    area: 'New Vasna',
+    city: 'Ahmedabad',
+    phone: '+919680202425',
+    whatsapp: '919680202425',
+    description: 'Mexican Pizza Parlour, New Vasna, Ahmedabad. Contact Lalit Kumavat for food enquiries.',
+    tags: ['Mexican Pizza', 'Food & Catering', 'Normal food'],
+    verified: false,
+    rating: 4.8,
+    startingPrice: 50,
+    packages: [
+      {
+        name: 'Normal food',
+        price: 500,
+        description: 'Confirm menu and package inclusions directly with the vendor.'
+      }
+    ],
+    status: 'demo',
+    isSample: true,
+    source: 'demo',
+  },
 ];
